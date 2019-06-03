@@ -1,3 +1,9 @@
+// file not needed just for referrence
+
+baseURL = window.location.hostname;
+adminID = document.getElementById("userGuid").value;
+adminToken = getCookie("webapitoken");
+
 function getCookie(name) {
     var value = '; ' + document.cookie;
     var parts = value.split('; ' + name + '=');
@@ -5,9 +11,7 @@ function getCookie(name) {
         return parts.pop().split(';').shift();
     }
 }
-baseURL = window.location.hostname;
-adminID = document.getElementById("userGuid").value;
-adminToken = getCookie("webapitoken");
+
 var settings = {
     "url": "https://" + baseURL + ".arcadier.io/api/v2/users/" + adminID,
     "method": "GET",
@@ -23,6 +27,11 @@ $.ajax(settings).done(function (response) {
 
 function sortByMonth(userRecords) {
     monthWise = {};
+    monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    monthData = {};
+    for (i = 0; i < 12; i++) {
+        monthData[i] = {}
+    }
     for (i = 0; i < userRecords.length; i++) {
         // console.log(userRecords[i].DateJoined)
         dateJoined = new Date(userRecords[i]["DateJoined"] * 1000);
@@ -46,7 +55,6 @@ function sortByMonth(userRecords) {
 }
 
 dataByYearMonth = sortByMonth(userRecords);
-monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function totalNumberOfUser(sortedData, userType, Date) {
     count = 0;
@@ -123,38 +131,5 @@ function monthCumulative(year, userType, month = false) {
         tableData = totalNumberOfUser(dataByYearMonth, userType, new Date(monthArray[month] + ' 1, ' + year.toString() + ' 00:00:00'));
         // var date1 = new Date('December 17, 1995 03:24:00');
 
-    }
-}
-
-function updateFrontEnd(data, tableID) {
-
-    var table = document.getElementById(tableID);
-    table.innerHTML = "";
-    table.border = 2;
-
-    var headerRow = document.createElement("tr");
-    keys = Object.keys(data);
-
-    headers = data[keys[0]];
-
-    for (header in headers) {
-        var heading = document.createElement("th");
-        heading.innerHTML = header;
-
-        headerRow.appendChild(heading);
-    }
-
-    table.appendChild(headerRow);
-
-    for (uniqKey in data) {
-        var newRow = document.createElement("tr");
-
-        for (header in headers) {
-            var rowData = document.createElement("td");
-            rowData.innerHTML = data[uniqKey][header];
-            newRow.appendChild(rowData);
-        }
-
-        table.appendChild(newRow);
     }
 }
