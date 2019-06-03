@@ -53,7 +53,7 @@ function getTopMerchants() {
   });
 
   var settings3 =  {
-    "url": "https://"+baseURL+"/api/v2/admins/"+adminID+"/transactions",
+    "url": "https://"+baseURL+"/api/v2/admins/"+adminID+"/transactions/?pageSize=1",
     "method":"GET",
     "headers":{
       "Authorization":"Bearer "+token
