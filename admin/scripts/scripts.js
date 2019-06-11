@@ -1,8 +1,8 @@
-function getCookie(name){
+function getCookie(name) {
   var value = '; ' + document.cookie;
   var parts = value.split('; ' + name + '=');
   if (parts.length === 2) {
-      return parts.pop().split(';').shift();
+    return parts.pop().split(';').shift();
   }
 }
 
@@ -15,8 +15,8 @@ var token = getCookie('webapitoken');
 var adminID;
 // var CORS = "cors-anywhere.herokuapp.com/";
 var CORS = "";
-var keyName = {"Merchant":"Total Revenue","User":"Total Money Spent"};
-var transactionName = {"Merchant":"Payee","User":"Payer"};
+var keyName = { "Merchant": "Total Revenue", "User": "Total Money Spent" };
+var transactionName = { "Merchant": "Payee", "User": "Payer" };
 var MerchantHistory;
 var UserHistory;
 var selectedDate;
@@ -24,102 +24,150 @@ var MerchantMonthData;
 var BuyerMonthData;
 var MerchantdateSelected = false;
 var BuyerdateSelected = false;
+var checkBoxStatus = [];
+var parameterList = ["User", "Merchant", "GMV", "totalFee"];
+var extra = [];
+var unformattedJSON;
+var startMonthTime = false;
+var startYearTime = false;
+var currDay = new Date();
+var endMonthTime = currDay.getMonth();
+var endYearTime = currDay.getFullYear();
 
-$(document).ready(function(){
+$(document).ready(function () {
   MerchantHistory = setHistoricalData("Merchant");
   BuyerHistory = setHistoricalData("User");
-  
+  // console.log(MerchantHistory);
 
-  $("#dateStartPickerMerchant").on('changeDate',function(selected){
+
+  $("#dateStartPickerMerchant").on('changeDate', function (selected) {
     MerchantdateSelected = true;
-    selectedDate = new Date(selected.date.valueOf()+1300000000);
+    selectedDate = new Date(selected.date.valueOf() + 1300000000);
     MerchantMonthData = MerchantHistory[selectedDate.getUTCFullYear()][selectedDate.getMonth()];
     var rank = parseInt(document.getElementById("MerchantChosenRanking").innerHTML.split(' ')[1]);
-    var rankedData = rankings(MerchantMonthData,rank);
-    updateFrontEnd(rankedData,"MerchantTable");
-    // console.log("Merchant Date Picked", rankedData);
+    var rankedData = rankings(MerchantMonthData, rank);
+    updateFrontEnd(rankedData, "MerchantTable");
+    console.log("Merchant Date Picked", rankedData);
   });
 
-  $("#dateStartPickerBuyer").on('changeDate',function(selected){
+  $("#dateStartPickerBuyer").on('changeDate', function (selected) {
     BuyerdateSelected = true
-    selectedDate = new Date(selected.date.valueOf()+1300000000);
+    selectedDate = new Date(selected.date.valueOf() + 1300000000);
     BuyerMonthData = BuyerHistory[selectedDate.getUTCFullYear()][selectedDate.getMonth()];
     var rank = parseInt(document.getElementById("BuyerChosenRanking").innerHTML.split(' ')[1]);
-    var rankedData = rankings(BuyerMonthData,rank);
-    updateFrontEnd(rankedData,"BuyerTable");
+    var rankedData = rankings(BuyerMonthData, rank);
+    updateFrontEnd(rankedData, "BuyerTable");
     // console.log("Buyer Date Picked", rankedData);
 
   });
 
-  $("#MerchantRankings li a").click(function(){
+  $("#MerchantRankings li a").click(function () {
     rank = parseInt($(this).text().split(' ')[1]);
-    if (MerchantdateSelected)
-    {
-      var rankedData = rankings(MerchantMonthData,rank);
-      updateFrontEnd(rankedData,"MerchantTable");
+    if (MerchantdateSelected) {
+      var rankedData = rankings(MerchantMonthData, rank);
+      updateFrontEnd(rankedData, "MerchantTable");
     }
     // console.log("Merchant changed rank",rankedData);
   })
 
-  $("#BuyerRankings li a").click(function(){
+  $("#BuyerRankings li a").click(function () {
     rank = parseInt($(this).text().split(' ')[1]);
-    if (BuyerdateSelected)
-    {
-      var rankedData = rankings(BuyerMonthData,rank);
-      updateFrontEnd(rankedData,"BuyerTable");
+    if (BuyerdateSelected) {
+      var rankedData = rankings(BuyerMonthData, rank);
+      updateFrontEnd(rankedData, "BuyerTable");
     }
     // console.log("Buyer changed rank",rankedData);
   })
+
+  // var unformattedJSONcumulative = convertMonthSpecificToCumulative(unformattedJSON);
+  var popUp = document.getElementById("popUpTime");
+  var checkBoxes = popUp.getElementsByClassName('fancy-checkbox')
+  for (i = 0; i < checkBoxes.length; i++) {
+    checkBoxStatus[i] = false;
+  }
+  unformattedJSON = retData(parameterList.concat(extra));
+
+  $("#t-dateStartPicker").on('changeDate', function (selected) {
+    startMonthTime = selected.date.getMonth();
+    startYearTime = selected.date.getFullYear();
+    // console.log('start', startMonthTime, startYearTime);
+    // console.log('end', endMonthTime, endYearTime);
+    // unformattedJSON = retData(['GMV', 'User', 'Merchant']);
+    // console.log(unformattedJSON);
+    formattedJSON = retDisplayData(unformattedJSON, startMonthTime, startYearTime, endMonthTime, endYearTime);
+    // console.log(formattedJSON);
+    console.log("update front end called");
+    updateFrontEnd(formattedJSON, 'TimeTable');
+  })
+
+  $("#t-dateEndPicker").on("changeDate", function (selected) {
+    if ((selected.date.getFullYear() < currDay.getFullYear()) || (selected.date.getFullYear() == currDay.getFullYear() && selected.date.getMonth() <= currDay.getMonth())) {
+      endMonthTime = selected.date.getMonth();
+      endYearTime = selected.date.getFullYear();
+    }
+    else {
+      endMonthTime = currDay.getMonth();
+      endYearTime = currDay.getFullYear();
+    }
+    console.log('start', startMonthTime, startYearTime);
+    console.log('end', endMonthTime, endYearTime);
+    if (monthArray[startMonthTime]) {
+      // unformattedJSON = retData(['GMV', 'User', 'Merchant']);
+      // console.log(unformattedJSON);
+      formattedJSON = retDisplayData(unformattedJSON, startMonthTime, startYearTime, endMonthTime, endYearTime);
+      // console.log(formattedJSON);
+      console.log("update front end called");
+      updateFrontEnd(formattedJSON, 'TimeTable');
+    }
+
+  })
+
 });
 
 
 
 
-function rankings(data,rank){
-  var returnData={};
+function rankings(data, rank) {
+  var returnData = {};
 
   var keys = Object.keys(data);
-  var countTill = keys.length<rank?keys.length:rank;
+  var countTill = keys.length < rank ? keys.length : rank;
 
-  for (var i = 0; i<rank; i++){
-    returnData[keys[i]] = Object.assign({},data[keys[i]]);
+  for (var i = 0; i < rank; i++) {
+    returnData[keys[i]] = Object.assign({}, data[keys[i]]);
   }
   // console.log(returnData);
   return returnData;
 }
 
-function setHistoricalData(userType)
-{
+function setHistoricalData(userType) {
   var HistoricalData;
   adminID = document.getElementById("userGuid").value;
   var reqData;
-  var cfName = userType.toLowerCase()+"defaulthistory";
+  var cfName = userType.toLowerCase() + "defaulthistory";
   var settings = {
-    "url": "https://"+CORS+baseURL+"/api/v2/marketplaces",
-    "method":"GET",
-    "headers":{
-      "Authorization":"Bearer "+token
+    "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer " + token
     },
-    "async":false
+    "async": false
   };
 
-  $.ajax(settings).done(function(response){
+  $.ajax(settings).done(function (response) {
     var cfs = response["CustomFields"];
-    $.each(cfs,function(index,cf){
-      if (cf["Name"]==cfName)
-      {
+    $.each(cfs, function (index, cf) {
+      if (cf["Name"] == cfName) {
         reqData = JSON.parse(cf["Values"][0]);
       }
     })
   });
 
-  if (reqData)
-  {
+  if (reqData) {
     HistoricalData = reqData;
   }
 
-  else
-  {
+  else {
     HistoricalData = calculateHistoricalData(userType);
     var cfData =
     {
@@ -127,36 +175,36 @@ function setHistoricalData(userType)
       "DataInputType": "textfield",
       "ReferenceTable": "Implementations",
       "DataFieldType": "string",
-      "IsMandatory":true,
+      "IsMandatory": true,
       "IsSearchable": true
     };
 
-    var settingstest ={
-        "url": "https://"+ CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
-        "method": "POST",
-        "headers": {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
-        },
-        "data": JSON.stringify(cfData)
+    var settingstest = {
+      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      "data": JSON.stringify(cfData)
     };
 
-    $.ajax(settingstest).done(function(response){
+    $.ajax(settingstest).done(function (response) {
 
       // console.log(response);
       var historyCf = {
         "CustomFields": [
-        {
+          {
             "Code": response["Code"],
             "Values": [
               JSON.stringify(HistoricalData)
             ]
-        }
-      ]
+          }
+        ]
       };
 
       var settings3 = {
-        "url": "https://"+ CORS + baseURL + "/api/v2/marketplaces",
+        "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -165,7 +213,7 @@ function setHistoricalData(userType)
         "data": JSON.stringify(historyCf)
       };
 
-      $.ajax(settings3).done(function(){
+      $.ajax(settings3).done(function () {
         console.log("Stored CF Successfully");
       });
     });
@@ -188,7 +236,7 @@ function setHistoricalData(userType)
   return HistoricalData;
 }
 
-function calculateHistoricalData(userType){
+function calculateHistoricalData(userType) {
 
   var orderHistory;
   var numOfRecords;
@@ -202,70 +250,67 @@ function calculateHistoricalData(userType){
   var MegaData = createMegaData(userType);
   // console.log(MegaData);
 
-  var settings3 =  {
-    "url": "https://"+CORS+baseURL+"/api/v2/admins/"+adminID+"/transactions/?pageSize=1",
-    "method":"GET",
-    "headers":{
-      "Authorization":"Bearer "+token
+  var settings3 = {
+    "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/transactions/?pageSize=1",
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer " + token
     },
-    "async":false
+    "async": false
   };
 
-  $.ajax(settings3).done(function(response){
+  $.ajax(settings3).done(function (response) {
     numOfRecords = response["TotalRecords"];
     var payment = response["Records"][0]["Orders"][0]["PaymentDetails"][0];
-    commPercent = payment["Fee"]/(parseFloat(payment["Total"])+parseFloat(payment["Fee"]));
+    commPercent = payment["Fee"] / (parseFloat(payment["Total"]) + parseFloat(payment["Fee"]));
 
   });
 
-  var settings =  {
-    "url": "https://"+CORS+baseURL+"/api/v2/admins/"+adminID+"/transactions/?pageSize="+numOfRecords,
-    "method":"GET",
-    "headers":{
-      "Authorization":"Bearer "+token
+  var settings = {
+    "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/transactions/?pageSize=" + numOfRecords,
+    "method": "GET",
+    "headers": {
+      "Authorization": "Bearer " + token
     },
-    "async":false
+    "async": false
   };
 
-  $.ajax(settings).done(function(response){
+  $.ajax(settings).done(function (response) {
     records = response["Records"];
-    $.each(records, function(index,record){
+    $.each(records, function (index, record) {
 
       var orders = record["Orders"];
-      $.each(orders, function(index,order){
+      $.each(orders, function (index, order) {
 
         var payDetails = order["PaymentDetails"];
-        $.each(payDetails, function(index, payDetail){
-          if (payDetail["InvoiceNo"]==record["InvoiceNo"]){
-            var orderDate = new Date(payDetail["DateTimeCreated"]*1000);
+        $.each(payDetails, function (index, payDetail) {
+          if (payDetail["InvoiceNo"] == record["InvoiceNo"]) {
+            var orderDate = new Date(payDetail["DateTimeCreated"] * 1000);
             var orderYear = orderDate.getUTCFullYear();
             var orderMonth = orderDate.getMonth();
             var trans = transactionName[userType];
             var kName = keyName[userType];
 
-            if (orderYear!=currDate.getUTCFullYear() || orderMonth!=currDate.getMonth())
-            {
-              var price = parseFloat(payDetail["Total"])+parseFloat(payDetail["Fee"]);
-              if (MegaData[orderYear]==null)
-              {
+            if (orderYear != currDate.getUTCFullYear() || orderMonth != currDate.getMonth()) {
+              var price = parseFloat(payDetail["Total"]) + parseFloat(payDetail["Fee"]);
+              if (MegaData[orderYear] == null) {
                 MegaData[orderYear] = {};
               }
-              if (MegaData[orderYear][orderMonth] == null)
-              {
+              if (MegaData[orderYear][orderMonth] == null) {
                 MegaData[orderYear][orderMonth] = {};
               }
-              if (MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]==null)
-              {
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] = {"Name": payDetail[trans]["FirstName"]+" "+payDetail[trans]["LastName"]+" (Deleted)",[kName]: price,
-                   "Number of Orders": 1,
-                   "Total Admin Commission":price*commPercent};
+              if (MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] == null) {
+                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] = {
+                  "Name": payDetail[trans]["FirstName"] + " " + payDetail[trans]["LastName"] + " (Deleted)", [kName]: price,
+                  "Number of Orders": 1,
+                  "Total Admin Commission": price * commPercent
+                };
               }
-              else
-              {
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]]+=price;
+              else {
+                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] += price;
                 var currPrice = MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]];
                 MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Number of Orders"]++;
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] = Math.round(commPercent*currPrice*100)/100;
+                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] = Math.round(commPercent * currPrice * 100) / 100;
               }
             }
           }
@@ -275,9 +320,9 @@ function calculateHistoricalData(userType){
   });
 
 
-  $.each(Object.keys(MegaData),function(index,year){
-    $.each(Object.keys(MegaData[year]),function(index,month){
-      MegaData[year][month] = sortData(MegaData[year][month],keyName[userType]);
+  $.each(Object.keys(MegaData), function (index, year) {
+    $.each(Object.keys(MegaData[year]), function (index, month) {
+      MegaData[year][month] = sortData(MegaData[year][month], keyName[userType]);
     })
   })
 
@@ -286,8 +331,7 @@ function calculateHistoricalData(userType){
 
 }
 
-function createMegaData(userType)
-{
+function createMegaData(userType) {
   var MegaData = {};
   var recordSize;
   var allUsers;
@@ -296,44 +340,41 @@ function createMegaData(userType)
   var currDate = new Date();
   var kName = keyName[userType];
   var settings2 = {
-    "url": "https://"+CORS+baseURL+"/api/v2/admins/"+adminID+"/users/?pageSize=1",
+    "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=1",
     "nethod": "GET",
     "headers": {
-      "Authorization": "Bearer "+token
+      "Authorization": "Bearer " + token
     },
     "async": false
   };
 
-  $.ajax(settings2).done(function(response){
+  $.ajax(settings2).done(function (response) {
     recordSize = response["TotalRecords"];
   });
 
   var settings3 = {
-    "url": "https://"+CORS+baseURL+"/api/v2/admins/"+adminID+"/users/?pageSize="+recordSize,
+    "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=" + recordSize,
     "nethod": "GET",
     "headers": {
-      "Authorization": "Bearer "+token
+      "Authorization": "Bearer " + token
     },
     "async": false
   };
 
-  $.ajax(settings3).done(function(response){
+  $.ajax(settings3).done(function (response) {
     allUsers = response["Records"];
   });
 
-  $.each(allUsers,function(index,user){
-    if (user["Roles"].indexOf(userType)>-1)
-    {
-      var dateCreated = new Date(user["DateJoined"]*1000);
-      if (MegaData[dateCreated.getUTCFullYear()]==null)
-      {
+  $.each(allUsers, function (index, user) {
+    if (user["Roles"].indexOf(userType) > -1) {
+      var dateCreated = new Date(user["DateJoined"] * 1000);
+      if (MegaData[dateCreated.getUTCFullYear()] == null) {
         MegaData[dateCreated.getUTCFullYear()] = {};
       }
-      if (MegaData[dateCreated.getUTCFullYear()][dateCreated.getMonth()]==null)
-      {
+      if (MegaData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] == null) {
         MegaData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] = {};
       }
-      MegaData[dateCreated.getUTCFullYear()][dateCreated.getMonth()][user["ID"]] = {"Name": user["FirstName"]+" "+user["LastName"], [kName]: 0, "Number of Orders": 0,"Total Admin Commission":0};
+      MegaData[dateCreated.getUTCFullYear()][dateCreated.getMonth()][user["ID"]] = { "Name": user["FirstName"] + " " + user["LastName"], [kName]: 0, "Number of Orders": 0, "Total Admin Commission": 0 };
     }
 
   })
@@ -343,34 +384,29 @@ function createMegaData(userType)
   minMonth = Object.keys(MegaData[minYear])[0];
   var prevData = {};
 
-  for (var i = minYear; i<=currDate.getUTCFullYear(); i++)
-  {
-    if (i==minYear)
-    {
+  for (var i = minYear; i <= currDate.getUTCFullYear(); i++) {
+    if (i == minYear) {
       var startMonth = minMonth;
       var endMonth = 11;
     }
-    else if (i==currDate.getUTCFullYear())
-    {
+    else if (i == currDate.getUTCFullYear()) {
       var startMonth = 0;
-      var endMonth = currDate.getMonth()-1;
+      var endMonth = currDate.getMonth() - 1;
     }
-    else
-    {
+    else {
       var startMonth = 0;
       var endMonth = 11;
     }
 
-    for (var j = startMonth; j<=endMonth; j++)
-    {
-      if (MegaData[i]==null){
+    for (var j = startMonth; j <= endMonth; j++) {
+      if (MegaData[i] == null) {
         MegaData[i] = {};
       }
-      if (MegaData[i][j]==null){
+      if (MegaData[i][j] == null) {
         MegaData[i][j] = {};
       }
-      MegaData[i][j] = jQuery.extend(true,prevData,MegaData[i][j]);
-      prevData = jQuery.extend(true,{},MegaData[i][j]);
+      MegaData[i][j] = jQuery.extend(true, prevData, MegaData[i][j]);
+      prevData = jQuery.extend(true, {}, MegaData[i][j]);
     }
   }
 
@@ -378,7 +414,7 @@ function createMegaData(userType)
 }
 
 
-function updateFrontEnd(data,tableID){
+function updateFrontEnd(data, tableID) {
 
   var table = document.getElementById(tableID);
   var tableClass = table.className;
@@ -401,7 +437,7 @@ function updateFrontEnd(data,tableID){
 
   headers = data[keys[0]];
 
-  for (header in headers){
+  for (header in headers) {
     var heading = document.createElement("th");
     heading.innerHTML = header;
 
@@ -410,10 +446,10 @@ function updateFrontEnd(data,tableID){
 
   table.childNodes[0].appendChild(headerRow);
 
-  for (merchant in data){
+  for (merchant in data) {
     var newRow = document.createElement("tr");
 
-    for (header in headers){
+    for (header in headers) {
       var rowData = document.createElement("td");
       rowData.innerHTML = data[merchant][header];
       newRow.appendChild(rowData);
@@ -428,18 +464,18 @@ function updateFrontEnd(data,tableID){
 // // console.log(JSON.stringify(sortData(testData)));
 // updateFrontEnd(sortData(testData,"Total Revenue"));
 
-function sortData(data,sortingKey){
-  arrayData = Object.keys(data).map(function(key){
-    return [key,data[key][sortingKey]];
+function sortData(data, sortingKey) {
+  arrayData = Object.keys(data).map(function (key) {
+    return [key, data[key][sortingKey]];
   });
   // console.log(arrayData);
   sortedArray = mergesort(arrayData);
   // console.log(sortedArray);
   sortedData = {}
 
-  for (var i=0;i<sortedArray.length;i++){
+  for (var i = 0; i < sortedArray.length; i++) {
     var ID = sortedArray[i][0];
-    newData = Object.assign({"Rank":i+1},data[ID]);
+    newData = Object.assign({ "Rank": i + 1 }, data[ID]);
     sortedData[ID] = newData;
   }
 
@@ -447,36 +483,36 @@ function sortData(data,sortingKey){
 
 }
 
-function getValue(array){
+function getValue(array) {
   return array[1];
 }
 
-function mergesort(array){
-  if (array.length<2){
+function mergesort(array) {
+  if (array.length < 2) {
     return array
   }
   else {
-    var mid = parseInt(array.length/2);
-    var left = array.splice(0,mid);
+    var mid = parseInt(array.length / 2);
+    var left = array.splice(0, mid);
     var right = array;
     left = mergesort(left);
     right = mergesort(right);
-    return merge(left,right);
+    return merge(left, right);
   }
 }
 
-function merge(array1,array2){
+function merge(array1, array2) {
   var returnArr = [];
 
-  while (array1.length!=0 && array2.length!=0){
-    if (getValue(array1[0])==getValue(array2[0])){
+  while (array1.length != 0 && array2.length != 0) {
+    if (getValue(array1[0]) == getValue(array2[0])) {
       returnArr.push(array1.shift());
       returnArr.push(array2.shift());
     }
-    else if (getValue(array1[0])>getValue(array2[0])){
+    else if (getValue(array1[0]) > getValue(array2[0])) {
       returnArr.push(array1.shift());
     }
-    else{
+    else {
       returnArr.push(array2.shift());
     }
   }
