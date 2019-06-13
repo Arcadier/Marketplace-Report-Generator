@@ -46,12 +46,12 @@
 }
 .list_row h3 {
 
-
+   
    font-size: 14px;
    color: #000;
    font-weight: 700;
    text-transform: uppercase;
-
+   
 
 }
 .list_row , .list_body .list_row {
@@ -239,7 +239,7 @@
     line-height: normal;
     letter-spacing: normal;
     color: #999999;
-    border: 1px solid #d0d0d0;
+    border: 1px solid #d0d0d0; 
 }
 .page-content-pagination ul li a.active {
     padding: 7px 13px;
@@ -249,7 +249,7 @@
     font-stretch: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: #4d4d4d;
+    color: #4d4d4d; 
 }
 .page-content-pagination ul li:first-child a, .page-content-pagination ul li:last-child a {
     padding: 12px 18px;
@@ -267,11 +267,11 @@
 }
 
 .page-market-report .page-content .dropdown button .selected-display {
-    color: #c7c7c7;
+    color: #c7c7c7; 
 }
 
 .page-market-report .page-content .dropdown button .selected-focus {
-    color: #000000;
+    color: #000000; 
 }
 
 .page-market-report .page-content .dropdown button .carat {
@@ -620,7 +620,7 @@
     max-width: 600px;
 }
 .page-report-option .fancy-checkbox input[type="checkbox"]:checked + label , .page-report-option .fancy-radio input[type="radio"]:checked + label {
-    background: url(../images/r-check.svg) no-repeat left center;
+    background: url(../images/r-check.svg) no-repeat left center;    
 }
 .page-report-option .fancy-radio input[type="radio"] + label , .page-report-option .fancy-checkbox input[type="checkbox"] + label {
     background: url(../images/r-uncheck.svg) no-repeat left center;
@@ -744,7 +744,7 @@
     width: 150px;
     margin-top: 10px;
     border: 1px solid transparent;
-
+ 
  }
 .my-btn {
 
@@ -806,7 +806,7 @@
 }
 .range-box {
     display: inline-block;
-    width: 100%;
+    width: 100%;     
 }
 .inline {
     float: none;
