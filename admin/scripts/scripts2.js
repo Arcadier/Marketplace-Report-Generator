@@ -327,15 +327,16 @@ function createCfImplementations(cfName, storedData, cf) {
         var settings1 = {
             "url": "https://" + baseUrl + "/api/v2/marketplaces",
             "method": "POST",
+            // "async": false,
             "headers": {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + admintoken
             },
-            "data": JSON.stringify(data),
-            "async": false
+            "data": JSON.stringify(data)
         };
 
         $.ajax(settings1).done(function (response) {
+            console.log('stored');
         });
 
     }
@@ -379,7 +380,7 @@ function createCfImplementations(cfName, storedData, cf) {
         var settings3 = {
             "url": "https://" + baseUrl + "/api/v2/marketplaces",
             "method": "POST",
-            "async": false,
+            // "async": false,
             "headers": {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + admintoken
@@ -388,6 +389,7 @@ function createCfImplementations(cfName, storedData, cf) {
         };
 
         $.ajax(settings3).done(function (response) {
+            console.log('stored');
         });
     }
 

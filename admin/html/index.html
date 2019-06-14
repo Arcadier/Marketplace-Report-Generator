@@ -62,31 +62,32 @@
 </head>
 
 <body class="page-merchant page-market-report">
-  <div class="loading" id="loadingdiv">
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-    <div class="loading-bar"></div>
-  </div>
-  <script type="text/javascript" src="scripts/scripts.js"></script>
-  <script type="text/javascript" src="scripts/scripts2.js"></script>
-  <div id="mainstuff" class="page-merchant page-market-report hide">
-
-
-    <div class="mobi-header visible-xs">
-        <div class="container">
-            <div class="pull-left">
-                <div class="brand-logo"><a href="#"><img alt="logo"
-                            src="https://bootstrap.arcadier.com/adminportal/images/brand-logo.png"></a></div>
-            </div>
-            <div class="pull-right">
-                <button type="button" class="navbar-toggle"> <span class="sr-only">Toggle navigation</span> <span
-                        class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-            </div>
-            <div class="clearfix"></div>
-        </div>
+    <div class="loading" id="loadingdiv">
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
+        <div class="loading-bar"></div>
     </div>
-    <!-- <div class="main template-sidebar">
+    <script type="text/javascript" src="scripts/scripts.js"></script>
+    <script type="text/javascript" src="scripts/scripts2.js"></script>
+    <div id="mainstuff" class="page-merchant page-market-report hide">
+
+
+        <div class="mobi-header visible-xs">
+            <div class="container">
+                <div class="pull-left">
+                    <div class="brand-logo"><a href="#"><img alt="logo"
+                                src="https://bootstrap.arcadier.com/adminportal/images/brand-logo.png"></a></div>
+                </div>
+                <div class="pull-right">
+                    <button type="button" class="navbar-toggle"> <span class="sr-only">Toggle navigation</span> <span
+                            class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <!-- <div class="main template-sidebar">
         <div class="col-sm-3 sidebar">
             <button class="navbar-back" type="button"> <i class="icon icon-arrowleft"></i> </button>
             <div class="brand-logo"><a href="start.html"><img
@@ -205,115 +206,120 @@
                 </ul>
             </div>
         </div> -->
-    <div class="col-sm-9 main-content">
-        <div class="page-header">
-            <div class="pull-left">
-                <div class="wrapper">
-                    <div class="page-icon"><i class="icon report-icon"></i></div>
-                    <div class="page-title">
-                        <h1>Market Report Generator</h1>
-                        <span class="sub-title">Get your statistics</span>
+        <div class="col-sm-9 main-content">
+            <div class="page-header">
+                <div class="pull-left">
+                    <div class="wrapper">
+                        <div class="page-icon"><i class="icon report-icon"></i></div>
+                        <div class="page-title">
+                            <h1>Market Report Generator</h1>
+                            <span class="sub-title">Get your statistics</span>
+                        </div>
                     </div>
                 </div>
+                <div class="clearfix"></div>
             </div>
-            <div class="clearfix"></div>
-        </div>
-        <div class="page-content page-layout">
-            <div class="gutter-wrapper">
-                <div class="panel-box ">
-                    <div class="page-content-top private-setting-container-switch">
-                        <div>
-                            <p>Report Options:</p>
+            <div class="page-content page-layout">
+                <div class="gutter-wrapper">
+                    <div class="panel-box ">
+                        <div class="page-content-top private-setting-container-switch">
+                            <div>
+                                <p>Report Options:</p>
+                            </div>
+                            <div>
+                                <div class="dropdown report-select">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="report-menu"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span class="selected-display">- Select -</span>
+                                        <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                title=""></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="report-menu">
+                                        <li><a id="rank-based" href="#">Rank Based Reports</a></li>
+                                        <li><a id="time-based" href="#">Time Based Reports</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-element report-login">
+
+                            </div>
+                            <div class="help-container">
+                                <a href="#" target="_blank"><img src="images/ques_invert.svg" alt="" title="">Help</a>
+                            </div>
                         </div>
-                        <div>
-                            <div class="dropdown report-select">
-                                <button class="btn btn-default dropdown-toggle" type="button" id="report-menu"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <span class="selected-display">- Select -</span>
-                                    <span class="carat up"><img src="images/chevron_down.svg" alt="" title=""></span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="report-menu">
-                                    <li><a id="rank-based" href="#">Rank Based Reports</a></li>
-                                    <li><a id="time-based" href="#">Time Based Reports</a></li>
+
+
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-box rank-based-holder">
+                        <div class="page-content-top rank-based-container box-tab-bar">
+                            <div class="panel-box-tab">
+                                <ul>
+                                    <li class="active">
+                                        <a href="#merchants" aria-controls="merchants" role="tab"
+                                            data-toggle="tab">Merchants</a>
+                                    </li>
+                                    <li>
+                                        <a href="#buyers" aria-controls="buyers" role="tab" data-toggle="tab">Buyers</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="form-element report-login">
+                        <div role="tabpanel" class="tab-pane fade in active" id="merchants">
+                            <div class="page-content-top_ rank-based-container rank-bar">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="rank">Rank:</label>
+                                        <div class="dropdown rank-select">
+                                            <button class="btn btn-default dropdown-toggle" type="button"
+                                                id="report-menu2" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="true">
+                                                <span class="selected-display" id="MerchantChosenRanking">Top 5</span>
+                                                <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                        title=""></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="report-menu2"
+                                                id="MerchantRankings">
+                                                <li><a id="rank-t-all">All Merchants</a></li>
+                                                <li><a id="rank-t-3">Top 3</a></li>
+                                                <li><a id="rank-t-5">Top 5</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="data-type">Data Type:</label>
+                                        <div class="dropdown rank-select">
+                                            <button class="btn btn-default dropdown-toggle" type="button"
+                                                id="report-menu3" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="true">
+                                                <span class="selected-display">Month Specific</span>
+                                                <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                        title=""></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="report-menu3"
+                                                id="merchantDataType">
+                                                <li><a id="rank-month">Month Specific</a></li>
+                                                <li><a id="rank-cumulative">Cumulative</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group rank-month rank-cumulative">
+                                        <label for="data-type">Month</label>
 
-                        </div>
-                        <div class="help-container">
-                            <a href="#" target="_blank"><img src="images/ques_invert.svg" alt="" title="">Help</a>
-                        </div>
-                    </div>
-
-
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-box rank-based-holder">
-                    <div class="page-content-top rank-based-container box-tab-bar">
-                        <div class="panel-box-tab">
-                            <ul>
-                                <li class="active">
-                                    <a href="#merchants" aria-controls="merchants" role="tab"
-                                        data-toggle="tab">Merchants</a>
-                                </li>
-                                <li>
-                                    <a href="#buyers" aria-controls="buyers" role="tab" data-toggle="tab">Buyers</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade in active" id="merchants">
-                        <div class="page-content-top_ rank-based-container rank-bar">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="rank">Rank:</label>
-                                    <div class="dropdown rank-select">
-                                        <button class="btn btn-default dropdown-toggle" type="button" id="report-menu2"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                            <span class="selected-display" id="MerchantChosenRanking">Top 5</span>
-                                            <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                        <div class="input-group input-daterange datepicker">
+                                            <input type="text" class="input-small form-control fc-control"
+                                                name="date-range" id="dateStartPickerMerchant" placeholder="MM/YYYY">
+                                            <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
                                                     title=""></span>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="report-menu2" id="MerchantRankings">
-                                            <li><a id="rank-t-all">All Merchants</a></li>
-                                            <li><a id="rank-t-3">Top 3</a></li>
-                                            <li><a id="rank-t-5">Top 5</a></li>
-                                        </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="data-type">Data Type:</label>
-                                    <div class="dropdown rank-select">
-                                        <button class="btn btn-default dropdown-toggle" type="button" id="report-menu3"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                            <span class="selected-display">Month Specific</span>
-                                            <span class="carat up"><img src="images/chevron_down.svg" alt=""
-                                                    title=""></span>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="report-menu3" id="merchantDataType">
-                                            <li><a id="rank-month">Month Specific</a></li>
-                                            <li><a id="rank-cumulative">Cumulative</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col"></div>
-                            <div class="col">
-                                <div class="form-group rank-month rank-cumulative">
-                                    <label for="data-type">Month</label>
-
-                                    <div class="input-group input-daterange datepicker">
-                                        <input type="text" class="input-small form-control fc-control" name="date-range"
-                                            id="dateStartPickerMerchant" placeholder="MM/YYYY">
-                                        <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
-                                                title=""></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- <div class="col">
+                                <!-- <div class="col">
                                 <div class="form-group rank-month">
                                     <label for="data-type">End Date</label>
 
@@ -325,7 +331,7 @@
                                     </div>
                                 </div>
                             </div> -->
-                            <!-- <div class="col hide">
+                                <!-- <div class="col hide">
                                 <div class="form-group rank-cumulative ">
                                     <label for="data-type">End Date</label>
 
@@ -342,22 +348,24 @@
                                 </div>
                             </div> -->
 
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="data-type">&nbsp;</label>
-                                    <div class="btn-group">
-                                        <button class="btn btn-square btn-tbl-settings" onclick="setCheckValues()"><a
-                                                href="#" data-toggle="modal" data-target="#timeTableSettingsrank"><img
-                                                    src="images/plugin_3.svg" alt="Table Settings"></a></button>
-                                        <button class="btn btn-blue" onclick="retCSV(displayedMerchantData)"><a href="#"
-                                                style="text-decoration: none;color: white">Download CSV</a></button>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="data-type">&nbsp;</label>
+                                        <div class="btn-group">
+                                            <button class="btn btn-square btn-tbl-settings"
+                                                onclick="setCheckValues()"><a href="#" data-toggle="modal"
+                                                    data-target="#timeTableSettingsrank"><img src="images/plugin_3.svg"
+                                                        alt="Table Settings"></a></button>
+                                            <button class="btn btn-blue" onclick="retCSV(displayedMerchantData)"><a
+                                                    href="#" style="text-decoration: none;color: white">Download
+                                                    CSV</a></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="page-content-pagination-page">
-                            <table class="table" id="MerchantTable">
-                                <!-- <thead>
+                            <div class="page-content-pagination-page">
+                                <table class="table" id="MerchantTable">
+                                    <!-- <thead>
                                     <tr>
                                         <th>First Name</th>
                                         <th>Last Name</th>
@@ -480,63 +488,65 @@
                                         <td>10</td>
                                     </tr>
                                 </tbody> -->
-                            </table>
+                                </table>
+                            </div>
+
+
+                            <div class="clearfix"></div>
                         </div>
+                        <div role="tabpanel" class="tab-pane fade" id="buyers">
+                            <div class="page-content-top_ rank-based-container rank-bar">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="rank">Rank:</label>
+                                        <div class="dropdown rank-select">
+                                            <button class="btn btn-default dropdown-toggle" type="button"
+                                                id="report-menu2" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="true">
+                                                <span class="selected-display" id="BuyerChosenRanking">Top 5</span>
+                                                <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                        title=""></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="report-menu2" id="BuyerRankings">
+                                                <li><a id="rank-t-all">All Buyers</a></li>
+                                                <li><a id="rank-t-3">Top 3</a></li>
+                                                <li><a id="rank-t-5">Top 5</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="data-type">Data Type:</label>
+                                        <div class="dropdown rank-select">
+                                            <button class="btn btn-default dropdown-toggle" type="button"
+                                                id="report-menu3" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="true">
+                                                <span class="selected-display">Month Specific</span>
+                                                <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                        title=""></span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="report-menu3" id="buyerDataType">
+                                                <li><a id="rank-month">Month Specific</a></li>
+                                                <li><a id="rank-cumulative">Cumulative</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group rank-month rank-cumulative">
+                                        <label for="data-type">Month</label>
 
-
-                        <div class="clearfix"></div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade" id="buyers">
-                        <div class="page-content-top_ rank-based-container rank-bar">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="rank">Rank:</label>
-                                    <div class="dropdown rank-select">
-                                        <button class="btn btn-default dropdown-toggle" type="button" id="report-menu2"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                            <span class="selected-display" id="BuyerChosenRanking">Top 5</span>
-                                            <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                        <div class="input-group input-daterange datepicker">
+                                            <input type="text" class="input-small form-control fc-control"
+                                                name="date-range" id="dateStartPickerBuyer" placeholder="MM/YYYY">
+                                            <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
                                                     title=""></span>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="report-menu2" id="BuyerRankings">
-                                            <li><a id="rank-t-all">All Buyers</a></li>
-                                            <li><a id="rank-t-3">Top 3</a></li>
-                                            <li><a id="rank-t-5">Top 5</a></li>
-                                        </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="data-type">Data Type:</label>
-                                    <div class="dropdown rank-select">
-                                        <button class="btn btn-default dropdown-toggle" type="button" id="report-menu3"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                            <span class="selected-display">Month Specific</span>
-                                            <span class="carat up"><img src="images/chevron_down.svg" alt=""
-                                                    title=""></span>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="report-menu3" id="buyerDataType">
-                                            <li><a id="rank-month">Month Specific</a></li>
-                                            <li><a id="rank-cumulative">Cumulative</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col"></div>
-                            <div class="col">
-                                <div class="form-group rank-month rank-cumulative">
-                                    <label for="data-type">Month</label>
-
-                                    <div class="input-group input-daterange datepicker">
-                                        <input type="text" class="input-small form-control fc-control" name="date-range"
-                                            id="dateStartPickerBuyer" placeholder="MM/YYYY">
-                                        <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
-                                                title=""></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- <div class="col">
+                                <!-- <div class="col">
                                 <div class="form-group rank-month">
                                     <label for="data-type">End Date</label>
 
@@ -548,7 +558,7 @@
                                     </div>
                                 </div>
                             </div> -->
-                            <!-- <div class="col hide">
+                                <!-- <div class="col hide">
                                 <div class="form-group rank-cumulative ">
                                     <label for="data-type">Month</label>
 
@@ -560,28 +570,29 @@
                                     </div>
                                 </div>
                             </div> -->
-                            <!-- <div class="col hide">
+                                <!-- <div class="col hide">
                                 <div class="form-group rank-cumulative ">
                                 </div>
                             </div> -->
 
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="data-type">&nbsp;</label>
-                                    <div class="btn-group">
-                                        <button onclick="setCheckValues()" class="btn btn-square btn-tbl-settings"><a
-                                                href="#" data-toggle="modal" data-target="#timeTableSettingsrank"><img
-                                                    src="images/plugin_3.svg" alt="Table Settings"></a></button>
-                                        <button onclick="retCSV(displayedBuyerData)" class="btn btn-blue"> <a
-                                                style="text-decoration: none;color: white" href="#">Download
-                                                CSV</a></button>
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label for="data-type">&nbsp;</label>
+                                        <div class="btn-group">
+                                            <button onclick="setCheckValues()"
+                                                class="btn btn-square btn-tbl-settings"><a href="#" data-toggle="modal"
+                                                    data-target="#timeTableSettingsrank"><img src="images/plugin_3.svg"
+                                                        alt="Table Settings"></a></button>
+                                            <button onclick="retCSV(displayedBuyerData)" class="btn btn-blue"> <a
+                                                    style="text-decoration: none;color: white" href="#">Download
+                                                    CSV</a></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="page-content-pagination-page">
-                            <table class="table" id="BuyerTable">
-                                <!-- <thead>
+                            <div class="page-content-pagination-page">
+                                <table class="table" id="BuyerTable">
+                                    <!-- <thead>
                                     <tr>
                                         <th>First Name</th>
                                         <th>Last Name</th>
@@ -704,16 +715,16 @@
                                         <td>10</td>
                                     </tr>
                                 </tbody> -->
-                            </table>
+                                </table>
+                            </div>
+
+
+                            <div class="clearfix"></div>
                         </div>
-
-
-                        <div class="clearfix"></div>
                     </div>
-                </div>
 
 
-                <!-- <nav class="page-content-pagination" aria-label="Page navigation" id="rankPagination">
+                    <!-- <nav class="page-content-pagination" aria-label="Page navigation" id="rankPagination">
                     <ul class="pagination">
                         <li>
                             <a href="#" aria-label="Previous">
@@ -731,10 +742,10 @@
                     </ul>
                 </nav> -->
 
-                <div class="panel-box time-based-holder">
-                    <div class="page-content-top_ rank-based-container rank-bar">
+                    <div class="panel-box time-based-holder">
+                        <div class="page-content-top_ rank-based-container rank-bar">
 
-                        <!-- <div class="col">
+                            <!-- <div class="col">
                             <div class="form-group">
                                 <label for="rank">Rank:</label>
                                 <div class="dropdown rank-select">
@@ -751,84 +762,85 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="data-type">Data Type:</label>
-                                <div class="dropdown rank-select">
-                                    <button class="btn btn-default dropdown-toggle" type="button" id="report-menu3"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <span class="selected-display">Month Specific</span>
-                                        <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="data-type">Data Type:</label>
+                                    <div class="dropdown rank-select">
+                                        <button class="btn btn-default dropdown-toggle" type="button" id="report-menu3"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <span class="selected-display">Month Specific</span>
+                                            <span class="carat up"><img src="images/chevron_down.svg" alt=""
+                                                    title=""></span>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="report-menu3">
+                                            <li><a id="rank-t-month" onclick="resetTable(0)">Month Specific</a></li>
+                                            <li><a id="rank-t-cumulative" onclick="resetTable(1)">Cumulative</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col"></div>
+                            <div class="col">
+                                <div class="form-group rank-t-month">
+                                    <label for="data-type">Start Date</label>
+
+                                    <div class="input-group input-daterange datepicker">
+                                        <input type="text" class="input-small form-control fc-control" name="date-range"
+                                            id="t-dateStartPicker" placeholder="MM/YYYY">
+                                        <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
                                                 title=""></span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="report-menu3">
-                                        <li><a id="rank-t-month" onclick="resetTable(0)">Month Specific</a></li>
-                                        <li><a id="rank-t-cumulative" onclick="resetTable(1)">Cumulative</a>
-                                        </li>
-                                    </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col"></div>
-                        <div class="col">
-                            <div class="form-group rank-t-month">
-                                <label for="data-type">Start Date</label>
+                            <div class="col">
+                                <div class="form-group rank-t-month">
+                                    <label for="data-type">End Date</label>
 
-                                <div class="input-group input-daterange datepicker">
-                                    <input type="text" class="input-small form-control fc-control" name="date-range"
-                                        id="t-dateStartPicker" placeholder="MM/YYYY">
-                                    <span class="input-group-addon"><img src="images/plugin_2.svg" alt=""
-                                            title=""></span>
+                                    <div class="input-group input-daterange datepicker">
+                                        <input type="text" class="input-small form-control fc-control" name="date-range"
+                                            id="t-dateEndPicker" placeholder="MM/YYYY">
+                                        <span class="input-group-addon" id="sizing-addon1"><img
+                                                src="images/plugin_2.svg" alt="" title=""></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group rank-t-month">
-                                <label for="data-type">End Date</label>
+                            <div class="col"></div>
+                            <div class="col hide">
+                                <div class="form-group rank-t-cumulative ">
+                                    <label for="data-type">End Date</label>
 
-                                <div class="input-group input-daterange datepicker">
-                                    <input type="text" class="input-small form-control fc-control" name="date-range"
-                                        id="t-dateEndPicker" placeholder="MM/YYYY">
-                                    <span class="input-group-addon" id="sizing-addon1"><img src="images/plugin_2.svg"
-                                            alt="" title=""></span>
+                                    <div class="input-group input-daterange datepicker">
+                                        <input type="text" class="input-small form-control fc-control" name="date-range"
+                                            id="cumDatePicker" placeholder="MM/YYYY">
+                                        <span class="input-group-addon" id="sizing-addon1"><img
+                                                src="images/plugin_2.svg" alt="" title=""></span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col hide">
-                            <div class="form-group rank-t-cumulative ">
-                                <label for="data-type">End Date</label>
+                            <div class="col hide">
+                                <div class="form-group rank-cumulative ">
+                                </div>
+                            </div>
 
-                                <div class="input-group input-daterange datepicker">
-                                    <input type="text" class="input-small form-control fc-control" name="date-range"
-                                        id="cumDatePicker" placeholder="MM/YYYY">
-                                    <span class="input-group-addon" id="sizing-addon1"><img src="images/plugin_2.svg"
-                                            alt="" title=""></span>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="data-type">&nbsp;</label>
+                                    <div class="btn-group">
+                                        <button class="btn btn-square btn-tbl-settings" onclick="setCheckBoxValues()"><a
+                                                href="#" data-toggle="modal" data-target="#timeTableSettings"><img
+                                                    src="images/plugin_3.svg" alt="Table Settings"></a></button>
+                                        <button class="btn btn-blue"
+                                            onclick="retCSV(formattedJSON,formattedJSONcum,currentDataTime)"><a href="#"
+                                                style=" text-decoration:  none; color:white">Download
+                                                CSV</a></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col hide">
-                            <div class="form-group rank-cumulative ">
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="data-type">&nbsp;</label>
-                                <div class="btn-group">
-                                    <button class="btn btn-square btn-tbl-settings" onclick="setCheckBoxValues()"><a
-                                            href="#" data-toggle="modal" data-target="#timeTableSettings"><img
-                                                src="images/plugin_3.svg" alt="Table Settings"></a></button>
-                                    <button class="btn btn-blue"
-                                        onclick="retCSV(formattedJSON,formattedJSONcum,currentDataTime)"><a href="#"
-                                            style=" text-decoration:  none; color:white">Download
-                                            CSV</a></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="page-content-pagination-page">
-                        <table class="table" id="TimeTable">
-                            <!-- <thead>
+                        <div class="page-content-pagination-page">
+                            <table class="table" id="TimeTable">
+                                <!-- <thead>
                                 <tr>
                                     <th>First test Name</th>
                                     <th>Last Name</th>
@@ -909,13 +921,13 @@
                                     <td>10</td>
                                 </tr>
                             </tbody> -->
-                        </table>
+                            </table>
+                        </div>
+
+
+                        <div class="clearfix"></div>
                     </div>
-
-
-                    <div class="clearfix"></div>
-                </div>
-                <!-- <nav class="page-content-pagination" aria-label="Page navigation" id="timePagination">
+                    <!-- <nav class="page-content-pagination" aria-label="Page navigation" id="timePagination">
                     <ul class="pagination">
                         <li>
                             <a href="#" aria-label="Previous">
@@ -933,242 +945,242 @@
                     </ul>
                 </nav> -->
 
-                <div class="modal fade model-img-crop" id="myModalLogo" tabindex="-1" role="dialog"
-                    aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div id="modaldialogLogo" class="html5imageupload" data-download="true"
-                                    data-save="false" data-resize="true" data-width="1280" data-height="600"
-                                    data-url="canvas.php" style="width: 100%;">
-                                    <input type="file" name="thumb" />
+                    <div class="modal fade model-img-crop" id="myModalLogo" tabindex="-1" role="dialog"
+                        aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div id="modaldialogLogo" class="html5imageupload" data-download="true"
+                                        data-save="false" data-resize="true" data-width="1280" data-height="600"
+                                        data-url="canvas.php" style="width: 100%;">
+                                        <input type="file" name="thumb" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal fade model-img-crop-background" id="myModalBackground" tabindex="-1" role="dialog"
-                    aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div id="modaldialogBackground" class="html5imageupload" data-download="true"
-                                    data-save="false" data-resize="true" data-width="1280" data-height="600"
-                                    data-url="canvas.php" style="width: 100%;">
-                                    <input type="file" name="thumb" />
+                    <div class="modal fade model-img-crop-background" id="myModalBackground" tabindex="-1" role="dialog"
+                        aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div id="modaldialogBackground" class="html5imageupload" data-download="true"
+                                        data-save="false" data-resize="true" data-width="1280" data-height="600"
+                                        data-url="canvas.php" style="width: 100%;">
+                                        <input type="file" name="thumb" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="InviteBuyer" class="popup popup-demo-seller in">
-                    <div class="popup-wrapper">
-                        <div class="popup-body">Invite your buyers to onboard on your private marketplace</div>
-                        <div class="pull-right">
-                            <button type="button" class="close" data-dismiss="modal">×</button>
-                        </div>
-                        <div class="popup-demo-content">
-                            <div class="popoup-private-seller-img"></div>
-                            <p>Enter your recipient emails below</p>
-                            <p>(Use commas separate multiple recipients).</p>
-                            <textarea placeholder="e.g: seller1@email.com, seller2@email.com"></textarea>
-                        </div>
-                        <div class="popup-footer">
-                            <input class="mybtn btn-blue" type="button" value="Send" data-dismiss="modal">
-                        </div>
-                    </div>
-                </div>
-                <div id="InviteSeller" class="popup popup-demo-seller in">
-                    <div class="popup-wrapper">
-                        <div class="popup-body">Invite your sellers to onboard on your private marketplace</div>
-                        <div class="pull-right">
-                            <button type="button" class="close" data-dismiss="modal">×</button>
-                        </div>
-                        <div class="popup-demo-content">
-                            <div class="popoup-private-seller-img"></div>
-                            <p>Enter your recipient emails below</p>
-                            <p>(Use commas separate multiple recipients).</p>
-                            <textarea placeholder="e.g: seller1@email.com, seller2@email.com"></textarea>
-                        </div>
-                        <div class="popup-footer">
-                            <input class="mybtn btn-blue" type="button" value="Send" data-dismiss="modal">
+                    <div id="InviteBuyer" class="popup popup-demo-seller in">
+                        <div class="popup-wrapper">
+                            <div class="popup-body">Invite your buyers to onboard on your private marketplace</div>
+                            <div class="pull-right">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                            </div>
+                            <div class="popup-demo-content">
+                                <div class="popoup-private-seller-img"></div>
+                                <p>Enter your recipient emails below</p>
+                                <p>(Use commas separate multiple recipients).</p>
+                                <textarea placeholder="e.g: seller1@email.com, seller2@email.com"></textarea>
+                            </div>
+                            <div class="popup-footer">
+                                <input class="mybtn btn-blue" type="button" value="Send" data-dismiss="modal">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal fade model-img-crop" id="myModal" tabindex="-1" role="dialog"
-                    aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <div id="modaldialog" class="html5imageupload" data-download="true" data-save="false"
-                                    data-resize="true" data-width="1200" data-height="800" data-url="canvas.php"
-                                    style="width: 100%;">
-                                    <input type="file" name="thumb" />
+                    <div id="InviteSeller" class="popup popup-demo-seller in">
+                        <div class="popup-wrapper">
+                            <div class="popup-body">Invite your sellers to onboard on your private marketplace</div>
+                            <div class="pull-right">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                            </div>
+                            <div class="popup-demo-content">
+                                <div class="popoup-private-seller-img"></div>
+                                <p>Enter your recipient emails below</p>
+                                <p>(Use commas separate multiple recipients).</p>
+                                <textarea placeholder="e.g: seller1@email.com, seller2@email.com"></textarea>
+                            </div>
+                            <div class="popup-footer">
+                                <input class="mybtn btn-blue" type="button" value="Send" data-dismiss="modal">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade model-img-crop" id="myModal" tabindex="-1" role="dialog"
+                        aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div id="modaldialog" class="html5imageupload" data-download="true"
+                                        data-save="false" data-resize="true" data-width="1200" data-height="800"
+                                        data-url="canvas.php" style="width: 100%;">
+                                        <input type="file" name="thumb" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Start Seller popup-->
-                <div id="StartSelling" class="popup popup-start-seller">
-                    <div class="popup-wrapper">
-                        <div class="pull-right">
-                            <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
-                                    class="icon icon-close"></i> </a>
-                        </div>
-                        <div class="popup-demo-content text-center">
-                            <p class="">You will be brought to another page to access these features. Press okay to
-                                continue!</p>
-                            <div class="fancy-checkbox"><label> <input type="checkbox" name="dont-show" value="1" />
-                                    Don’t show me this again</label></div>
-                        </div>
-                        <div class="popup-footer">
-                            <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
-                            <a href="https://bootstrap.arcadier.com/marketplace/seller_items.html"
-                                class="mybtn btn-blue">Okay</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- End Start Seller popup-->
-                <!-- Start Rank Table Settings popup-->
-                <div id="rankTableSettings" class="popup popup-start-seller table-settings">
-                    <div class="popup-wrapper">
-                        <div class="pull-right">
-                            <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
-                                    class="icon icon-close"></i> </a>
-                        </div>
-                        <div class="title-area text-capitalize">
-                            <h1>Table Settings</h1>
-                        </div>
-                        <div class="demo-container">
-                            <p class="">Select columns to add in for the <span>Top Merchant</span> table:</p>
+                    <!-- Start Seller popup-->
+                    <div id="StartSelling" class="popup popup-start-seller">
+                        <div class="popup-wrapper">
+                            <div class="pull-right">
+                                <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
+                                        class="icon icon-close"></i> </a>
+                            </div>
                             <div class="popup-demo-content text-center">
-
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option1" name="" value="1" /><label
-                                        for="option1"><span>Additional Option 1</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option2" name="" value="2" /><label
-                                        for="option2"><span>Additional Option 2</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option3" name="" value="3" /><label
-                                        for="option3"><span>Additional Option 3</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option4" name="" value="4" /><label
-                                        for="option4"><span>Additional Option 4</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option5" name="" value="5" /><label
-                                        for="option5"><span>Additional Option 5</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option6" name="" value="6" /><label
-                                        for="option6"><span>Additional Option 6</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option1" name="" value="1" /><label
-                                        for="option1"><span>Additional Option 1</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option2" name="" value="2" /><label
-                                        for="option2"><span>Additional Option 2</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option3" name="" value="3" /><label
-                                        for="option3"><span>Additional Option 3</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option4" name="" value="4" /><label
-                                        for="option4"><span>Additional Option 4</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option5" name="" value="5" /><label
-                                        for="option5"><span>Additional Option 5</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option6" name="" value="6" /><label
-                                        for="option6"><span>Additional Option 6</span></label>
-                                </div>
-
+                                <p class="">You will be brought to another page to access these features. Press okay to
+                                    continue!</p>
+                                <div class="fancy-checkbox"><label> <input type="checkbox" name="dont-show" value="1" />
+                                        Don’t show me this again</label></div>
                             </div>
-                            <p class="">Select columns to add in for the <span>Top Consumer</span> table:</p>
-                            <div class="popup-demo-content text-center">
-
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option1" name="" value="1" /><label
-                                        for="option1"><span>Additional Option 1</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option2" name="" value="2" /><label
-                                        for="option2"><span>Additional Option 2</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option3" name="" value="3" /><label
-                                        for="option3"><span>Additional Option 3</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option4" name="" value="4" /><label
-                                        for="option4"><span>Additional Option 4</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option5" name="" value="5" /><label
-                                        for="option5"><span>Additional Option 5</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option6" name="" value="6" /><label
-                                        for="option6"><span>Additional Option 6</span></label>
-                                </div>
+                            <div class="popup-footer">
+                                <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
+                                <a href="https://bootstrap.arcadier.com/marketplace/seller_items.html"
+                                    class="mybtn btn-blue">Okay</a>
                             </div>
-                        </div>
-
-                        <div class="popup-footer">
-                            <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
-                            <a href="#" class="mybtn btn-blue" data-dismiss="modal">Save</a>
                         </div>
                     </div>
-                </div>
-                <!-- End Rank Table Settings popup-->
-                <!-- Start Time Table Settings popup-->
-                <div id="timeTableSettings" class="popup popup-start-seller table-settings">
-                    <div class="popup-wrapper">
-                        <div class="pull-right">
-                            <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
-                                    class="icon icon-close"></i> </a>
+                    <!-- End Start Seller popup-->
+                    <!-- Start Rank Table Settings popup-->
+                    <div id="rankTableSettings" class="popup popup-start-seller table-settings">
+                        <div class="popup-wrapper">
+                            <div class="pull-right">
+                                <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
+                                        class="icon icon-close"></i> </a>
+                            </div>
+                            <div class="title-area text-capitalize">
+                                <h1>Table Settings</h1>
+                            </div>
+                            <div class="demo-container">
+                                <p class="">Select columns to add in for the <span>Top Merchant</span> table:</p>
+                                <div class="popup-demo-content text-center">
+
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option1" name="" value="1" /><label
+                                            for="option1"><span>Additional Option 1</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option2" name="" value="2" /><label
+                                            for="option2"><span>Additional Option 2</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option3" name="" value="3" /><label
+                                            for="option3"><span>Additional Option 3</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option4" name="" value="4" /><label
+                                            for="option4"><span>Additional Option 4</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option5" name="" value="5" /><label
+                                            for="option5"><span>Additional Option 5</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option6" name="" value="6" /><label
+                                            for="option6"><span>Additional Option 6</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option1" name="" value="1" /><label
+                                            for="option1"><span>Additional Option 1</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option2" name="" value="2" /><label
+                                            for="option2"><span>Additional Option 2</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option3" name="" value="3" /><label
+                                            for="option3"><span>Additional Option 3</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option4" name="" value="4" /><label
+                                            for="option4"><span>Additional Option 4</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option5" name="" value="5" /><label
+                                            for="option5"><span>Additional Option 5</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option6" name="" value="6" /><label
+                                            for="option6"><span>Additional Option 6</span></label>
+                                    </div>
+
+                                </div>
+                                <p class="">Select columns to add in for the <span>Top Consumer</span> table:</p>
+                                <div class="popup-demo-content text-center">
+
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option1" name="" value="1" /><label
+                                            for="option1"><span>Additional Option 1</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option2" name="" value="2" /><label
+                                            for="option2"><span>Additional Option 2</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option3" name="" value="3" /><label
+                                            for="option3"><span>Additional Option 3</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option4" name="" value="4" /><label
+                                            for="option4"><span>Additional Option 4</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option5" name="" value="5" /><label
+                                            for="option5"><span>Additional Option 5</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option6" name="" value="6" /><label
+                                            for="option6"><span>Additional Option 6</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="popup-footer">
+                                <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
+                                <a href="#" class="mybtn btn-blue" data-dismiss="modal">Save</a>
+                            </div>
                         </div>
-                        <div class="title-area text-capitalize">
-                            <h1>Table Settings</h1>
-                        </div>
-                        <div class="demo-container">
-                            <p class="">Select columns to add in for the <span>Time Based Report</span> table:</p>
-                            <div class="popup-demo-content text-center" id="popUpTime">
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option1b" name="" value="1" /><label
-                                        for="option1b"><span>Orders</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option2b" name="" value="2" /><label
-                                        for="option2b"><span>Sold Items</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option3b" name="" value="3" /><label
-                                        for="option3b"><span>Refunded items</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option4b" name="" value="4" /><label
-                                        for="option4b"><span>Merchant Buyer Ratio</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option5b" name="" value="5" /><label
-                                        for="option5b"><span>Average Revenue per Merchant</span></label>
-                                </div>
-                                <div class="fancy-checkbox">
-                                    <input type="checkbox" id="option6b" name="" value="6" /><label
-                                        for="option6b"><span>Average Commission Fee per Merchant</span></label>
-                                </div>
-                                <!-- <div class="fancy-checkbox">
+                    </div>
+                    <!-- End Rank Table Settings popup-->
+                    <!-- Start Time Table Settings popup-->
+                    <div id="timeTableSettings" class="popup popup-start-seller table-settings">
+                        <div class="popup-wrapper">
+                            <div class="pull-right">
+                                <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
+                                        class="icon icon-close"></i> </a>
+                            </div>
+                            <div class="title-area text-capitalize">
+                                <h1>Table Settings</h1>
+                            </div>
+                            <div class="demo-container">
+                                <p class="">Select columns to add in for the <span>Time Based Report</span> table:</p>
+                                <div class="popup-demo-content text-center" id="popUpTime">
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option1b" name="" value="1" /><label
+                                            for="option1b"><span>Orders</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option2b" name="" value="2" /><label
+                                            for="option2b"><span>Sold Items</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option3b" name="" value="3" /><label
+                                            for="option3b"><span>Refunded items</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option4b" name="" value="4" /><label
+                                            for="option4b"><span>Merchant Buyer Ratio</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option5b" name="" value="5" /><label
+                                            for="option5b"><span>Average Revenue per Merchant</span></label>
+                                    </div>
+                                    <div class="fancy-checkbox">
+                                        <input type="checkbox" id="option6b" name="" value="6" /><label
+                                            for="option6b"><span>Average Commission Fee per Merchant</span></label>
+                                    </div>
+                                    <!-- <div class="fancy-checkbox">
                                     <input type="checkbox" id="option7" name="" value="7" /><label
                                         for="option7"><span>Additional Option 7</span></label>
                                 </div>
@@ -1192,7 +1204,7 @@
                                     <input type="checkbox" id="option12" name="" value="12" /><label
                                         for="option12"><span>Additional Option 12</span></label>
                                 </div> -->
-                                <!-- <div class="fancy-checkbox">
+                                    <!-- <div class="fancy-checkbox">
                                     <input type="checkbox" id="option1b" name="" value="1" /><label
                                         for="option1b"><span>Additional Option 1</span></label>
                                 </div>
@@ -1241,42 +1253,42 @@
                                     <input type="checkbox" id="option12" name="" value="12" /><label
                                         for="option12"><span>Additional Option 12</span></label>
                                 </div> -->
-                            </div>
-                            <div class="popup-footer">
-                                <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
-                                <button class="mybtn btn-blue" onclick="updateMetricsTime()" data-dismiss="modal"><a
-                                        href="#" class="mybtn btn-blue" id="saveTimeOptions"
-                                        data-dismiss="modal">Save</a></button>
+                                </div>
+                                <div class="popup-footer">
+                                    <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
+                                    <button class="mybtn btn-blue" onclick="updateMetricsTime()" data-dismiss="modal"><a
+                                            href="#" class="mybtn btn-blue" id="saveTimeOptions"
+                                            data-dismiss="modal">Save</a></button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- End Time Table Settings popup-->
+                    <!-- End Time Table Settings popup-->
 
-                <!-- Start Time Table Settings popup-->
-                <div id="timeTableSettingsrank" class="popup popup-start-seller table-settings">
-                    <div class="popup-wrapper">
-                        <div class="pull-right">
-                            <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
-                                    class="icon icon-close"></i> </a>
-                        </div>
-                        <div class="title-area text-capitalize">
-                            <h1>Table Settings</h1>
-                        </div>
-                        <div class="demo-container">
-                            <div class="merchant-box">
-                                <p class="">Select columns to add in for the <span>Top Merchant </span> table:</p>
-                                <div id="merchant-options" class="popup-demo-content text-center">
-                                    <div class="fancy-checkbox">
-                                        <input type="checkbox" id="option1m" name="" value="1" /><label
-                                            for="option1m"><span>Payment Gateway</span></label>
-                                    </div>
-                                    <div class="fancy-checkbox">
-                                        <input type="checkbox" id="option2m" name="" value="2" /><label
-                                            for="option2m"><span>Location</span></label>
-                                    </div>
-                                    <!-- <div class="fancy-checkbox">
+                    <!-- Start Time Table Settings popup-->
+                    <div id="timeTableSettingsrank" class="popup popup-start-seller table-settings">
+                        <div class="popup-wrapper">
+                            <div class="pull-right">
+                                <a href="javascript:void(0)" class="close-popup" data-dismiss="modal"><i
+                                        class="icon icon-close"></i> </a>
+                            </div>
+                            <div class="title-area text-capitalize">
+                                <h1>Table Settings</h1>
+                            </div>
+                            <div class="demo-container">
+                                <div class="merchant-box">
+                                    <p class="">Select columns to add in for the <span>Top Merchant </span> table:</p>
+                                    <div id="merchant-options" class="popup-demo-content text-center">
+                                        <div class="fancy-checkbox">
+                                            <input type="checkbox" id="option1m" name="" value="1" /><label
+                                                for="option1m"><span>Payment Gateway</span></label>
+                                        </div>
+                                        <div class="fancy-checkbox">
+                                            <input type="checkbox" id="option2m" name="" value="2" /><label
+                                                for="option2m"><span>Location</span></label>
+                                        </div>
+                                        <!-- <div class="fancy-checkbox">
                                         <input type="checkbox" id="option3m" name="" value="3" /><label
                                             for="option3m"><span>Additional Option 3</span></label>
                                     </div>
@@ -1294,17 +1306,17 @@
                                     </div>
                                     <hr> -->
 
-                                </div>
-                            </div>
-
-                            <div class="consumer-box">
-                                <p class="">Select columns to add in for the <span>Top Consumer </span> table:</p>
-                                <div id="buyer-options" class="popup-demo-content text-center">
-                                    <div class="fancy-checkbox">
-                                        <input type="checkbox" id="option1c" name="" value="1" /><label
-                                            for="option1c"><span>Location</span></label>
                                     </div>
-                                    <!-- <div class="fancy-checkbox">
+                                </div>
+
+                                <div class="consumer-box">
+                                    <p class="">Select columns to add in for the <span>Top Consumer </span> table:</p>
+                                    <div id="buyer-options" class="popup-demo-content text-center">
+                                        <div class="fancy-checkbox">
+                                            <input type="checkbox" id="option1c" name="" value="1" /><label
+                                                for="option1c"><span>Location</span></label>
+                                        </div>
+                                        <!-- <div class="fancy-checkbox">
                                         <input type="checkbox" id="option2c" name="" value="2" /><label
                                             for="option2c"><span>Additional Option 2</span></label>
                                     </div>
@@ -1326,80 +1338,81 @@
                                     </div>
                                     <hr> -->
 
+                                    </div>
+                                </div>
+                                <div class="popup-footer">
+                                    <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
+                                    <button data-dismiss="modal" class="mybtn btn-blue" onclick="getOptionsSelected()">
+                                        <a href="#" class="mybtn btn-blue">Save</a></button>
                                 </div>
                             </div>
-                            <div class="popup-footer">
-                                <a href="#" class="mybtn btn-grey" data-dismiss="modal">Cancel</a>
-                                <button data-dismiss="modal" class="mybtn btn-blue" onclick="getOptionsSelected()"> <a
-                                        href="#" class="mybtn btn-blue">Save</a></button>
-                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- End Time Table Settings popup-->
-                <div id="cover"></div>
-                <div id="coverdark"></div>
+                    <!-- End Time Table Settings popup-->
+                    <div id="cover"></div>
+                    <div id="coverdark"></div>
 
-                <!-- Link Stripe Save cofirm popop-->
-                <div class="popup popup-save-confirm" id="link-stripe-account">
-                    <div class="popup-wrapper">
-                        <div class="popup-body">
-                            <div align="center">
-                                <h2 class="red-bold">Warning! </h2>
+                    <!-- Link Stripe Save cofirm popop-->
+                    <div class="popup popup-save-confirm" id="link-stripe-account">
+                        <div class="popup-wrapper">
+                            <div class="popup-body">
+                                <div align="center">
+                                    <h2 class="red-bold">Warning! </h2>
+                                </div>
+                                <div class="text-center content-text">Changing this value will affect all the weight
+                                    units on<br>your marketplace.</div>
                             </div>
-                            <div class="text-center content-text">Changing this value will affect all the weight
-                                units on<br>your marketplace.</div>
-                        </div>
-                        <div class="popup-footer text-center">
-                            <input onclick="popupConfirm_close('link-stripe-account');" class="mybtn btn-grey"
-                                type="button" value="Cancel" name="cancel">
-                            <input onclick="popupConfirm_ok();" class="mybtn btn-blue" type="button" value="Okay"
-                                name="cancel">
-                        </div>
-                        <a href="javascript:void(0)" class="close-popup"
-                            onclick="popupConfirm_close('link-stripe-account');"><i class="icon icon-close"></i>
-                        </a>
-                    </div>
-                </div>
-                <!-- Link Stripe  end Save cofirm popop -->
-                <div class="popup-area item-remove-popup" id="DeleteCustomMethod">
-                    <div class="wrapper">
-                        <div class="title-area text-capitalize">
-                            <h1>REMOVE ITEM</h1>
-                        </div>
-                        <div class="content-area">
-                            <p>You sure about removing this item from your
-                                list? (It'll be gone forever!)</p>
-                        </div>
-                        <div class="btn-area">
-                            <div class="pull-left">
-                                <input onclick="cancel_remove();" type="button" value="CANCEL" class="my-btn btn-black">
+                            <div class="popup-footer text-center">
+                                <input onclick="popupConfirm_close('link-stripe-account');" class="mybtn btn-grey"
+                                    type="button" value="Cancel" name="cancel">
+                                <input onclick="popupConfirm_ok();" class="mybtn btn-blue" type="button" value="Okay"
+                                    name="cancel">
                             </div>
-                            <div class="pull-right">
-                                <input data-key="" data-id="" onclick="confirm_remove(this);" type="button" value="Okay"
-                                    class="my-btn btn-saffron">
-                            </div>
-                            <div class="clearfix"></div>
+                            <a href="javascript:void(0)" class="close-popup"
+                                onclick="popupConfirm_close('link-stripe-account');"><i class="icon icon-close"></i>
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="popup-area popup-confirm-opt" id="popupConfirmOpt">
-                    <div class="wrapper">
-                        <div class="content-area text-center">
-                            <p><strong class="text text-danger">Warning!</strong> This will change how the rates
-                                are calculated</p>
-                            <br>
+                    <!-- Link Stripe  end Save cofirm popop -->
+                    <div class="popup-area item-remove-popup" id="DeleteCustomMethod">
+                        <div class="wrapper">
+                            <div class="title-area text-capitalize">
+                                <h1>REMOVE ITEM</h1>
+                            </div>
+                            <div class="content-area">
+                                <p>You sure about removing this item from your
+                                    list? (It'll be gone forever!)</p>
+                            </div>
+                            <div class="btn-area">
+                                <div class="pull-left">
+                                    <input onclick="cancel_remove();" type="button" value="CANCEL"
+                                        class="my-btn btn-black">
+                                </div>
+                                <div class="pull-right">
+                                    <input data-key="" data-id="" onclick="confirm_remove(this);" type="button"
+                                        value="Okay" class="my-btn btn-saffron">
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
                         </div>
-                        <div class="btn-area text-center">
-                            <input onclick="popupConfirmAction('save')" class="my-btn btn-black" type="button"
-                                value="Okay">
+                    </div>
+                    <div class="popup-area popup-confirm-opt" id="popupConfirmOpt">
+                        <div class="wrapper">
+                            <div class="content-area text-center">
+                                <p><strong class="text text-danger">Warning!</strong> This will change how the rates
+                                    are calculated</p>
+                                <br>
+                            </div>
+                            <div class="btn-area text-center">
+                                <input onclick="popupConfirmAction('save')" class="my-btn btn-black" type="button"
+                                    value="Okay">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
     <script type="text/javascript">
         function readURL1(input1) {
@@ -2094,7 +2107,7 @@
             });
         });
     </script>
-  </div>
+    </div>
 </body>
 
 </html>
