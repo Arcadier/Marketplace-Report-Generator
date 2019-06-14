@@ -26,8 +26,7 @@
     <!-- custom js -->
     <script type="text/javascript" src="scripts/moment.min.js"></script>
     <script type="text/javascript" src="scripts/daterangepicker.js"></script>
-    <script type="text/javascript" src="scripts/scripts.js"></script>
-    <script type="text/javascript" src="scripts/scripts2.js"></script>
+
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
     <!-- <script type="text/javascript" src="https://bootstrap.arcadier.com/adminportal/js/custom.js"></script> -->
@@ -52,6 +51,7 @@
     <link href="css/adminstyle.css" rel="stylesheet" type="text/css">
     <!-- <link href="css/package.css" rel="stylesheet" type="text/css"> -->
     <link href="css/market-report.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     <style type="text/css">
         .consumer-box {
             padding-top: 20px;
@@ -62,7 +62,15 @@
 </head>
 
 <body class="page-merchant page-market-report">
-  <div class="page-merchant page-market-report">
+  <div class="loading" id="loadingdiv">
+    <div class="loading-bar"></div>
+    <div class="loading-bar"></div>
+    <div class="loading-bar"></div>
+    <div class="loading-bar"></div>
+  </div>
+  <script type="text/javascript" src="scripts/scripts.js"></script>
+  <script type="text/javascript" src="scripts/scripts2.js"></script>
+  <div id="mainstuff" class="page-merchant page-market-report hide">
 
 
     <div class="mobi-header visible-xs">

@@ -45,7 +45,20 @@ function getLocation() {
   return locationData;
 }
 
+// $(document).load(function() {
+//      $('#loading').addClass("hide");
+//      $('#mainstuff').removeClass("hide");
+//      // console.log($('#mainstuff'))
+//   });
+
+// $(window).load(function() {
+// 		// Animate loader off screen
+// 		$(".se-pre-con").fadeOut("slow");
+//     $('#mainstuff').removeClass("hide");
+// 	});
 $(document).ready(function () {
+  // $('#mainstuff').addClass("hide");
+
   adminID = document.getElementById("userGuid").value;
   MerchantHistory = setHistoricalData("Merchant");
   BuyerHistory = setHistoricalData("User");
@@ -55,15 +68,14 @@ $(document).ready(function () {
   BuyerCumilHistory = getCumulative(BuyerHistory, "User");
   var megaDataDict = { "Month Specific": { "Merchant": MerchantHistory, "Buyer": BuyerHistory }, "Cumulative": { "Merchant": MerchantCumilHistory, "Buyer": BuyerCumilHistory } };
 
-  // console.log(MerchantCumilHistory);
-  // console.log(BuyerCumilHistory);
+
 
   $("#dateStartPickerMerchant").on('changeDate', function (selected) {
     MerchantdateSelected = true;
     var MerchantTopRanks = document.getElementById("MerchantRankings");
     MerchantselectedDate = new Date(selected.date.valueOf() + 1300000000);
     MerchantMonthData = megaDataDict[merchantdataType]["Merchant"][MerchantselectedDate.getUTCFullYear()][MerchantselectedDate.getMonth()];
-    // console.log(MerchantMonthData);
+
     nMerchants = Object.keys(MerchantMonthData).length;
     updateRankings(nMerchants, MerchantTopRanks, "All Merchants");
     var rank = document.getElementById("MerchantChosenRanking").innerHTML.split(' ')[1];
@@ -77,7 +89,7 @@ $(document).ready(function () {
     displayedMerchantData = rankings(OptionMerchantMonthData, rank);
 
     updateFrontEnd(displayedMerchantData, "MerchantTable");
-    // console.log("Merchant Date Picked", rankedData);
+
   });
 
   $("#dateStartPickerBuyer").on('changeDate', function (selected) {
@@ -98,7 +110,7 @@ $(document).ready(function () {
     displayedBuyerData = rankings(OptionBuyerMonthData, rank);
 
     updateFrontEnd(displayedBuyerData, "BuyerTable");
-    // console.log("Buyer Date Picked", rankedData);
+
   });
 
   $("#merchantDataType li a").click(function () {
@@ -203,6 +215,9 @@ $(document).ready(function () {
     updateFrontEnd(formattedJSONcum, 'TimeTable');
 
   })
+  // $('#loading').hide();
+  $('#loadingdiv').addClass("hide");
+  $('#mainstuff').removeClass("hide");
 
 });
 
@@ -287,7 +302,7 @@ function getOptionsSelected() {
 
 
   selectedOptions = { "MerchantOptions": Merchselected, "BuyerOptions": Buyerselected };
-  // console.log(selectedOptions);
+
 
   if (MerchantdateSelected) {
     OptionMerchantMonthData = addOptionsSelected("MerchantOptions");
@@ -345,7 +360,7 @@ function addOption(currData, newCol, Heading) {
   var keys = Object.keys(currData);
   for (var i = 0; i < keys.length; i++) {
     var curr = currData[keys[i]];
-    // console.log(newCol[keys[i]]);
+
     if (newCol[keys[i]] == null) {
       curr[Heading] = "Deleted Data";
     }
@@ -395,7 +410,7 @@ function updateRankings(num, list, type) {
   var li = document.createElement("li");
   li.appendChild(link);
   list.appendChild(li);
-  // console.log(list);
+
   var start = 5;
   for (i = start; i <= num; i += 5) {
     var topString = "Top " + i;
@@ -422,7 +437,7 @@ function updateRankings(num, list, type) {
       displayedMerchantData = rankings(OptionMerchantMonthData, rank);
       updateFrontEnd(displayedMerchantData, "MerchantTable");
     }
-    // console.log("Merchant changed rank",rankedData);
+
   });
   $("#BuyerRankings li a").click(function () {
     rank = $(this).text().split(' ')[1];
@@ -437,7 +452,7 @@ function updateRankings(num, list, type) {
       displayedBuyerData = rankings(OptionBuyerMonthData, rank);
       updateFrontEnd(displayedBuyerData, "BuyerTable");
     }
-    // console.log("Buyer changed rank",rankedData);
+
   });
 
 }
@@ -447,14 +462,12 @@ function rankings(data, rank) {
 
   var keys = Object.keys(data);
   var countTill = keys.length < rank ? keys.length : rank;
-  // console.log(countTill);
-  // console.log(keys.length);
-  // console.log(rank);
+
 
   for (var i = 0; i < countTill; i++) {
     returnData[keys[i]] = Object.assign({}, data[keys[i]]);
   }
-  // console.log(returnData);
+
   return returnData;
 }
 
@@ -508,7 +521,7 @@ function setHistoricalData(userType) {
 
     $.ajax(settingstest).done(function (response) {
 
-      // console.log(response);
+
       var historyCf = {
         "CustomFields": [
           {
@@ -602,7 +615,7 @@ function setLocation(userType) {
 
     $.ajax(settingstest).done(function (response) {
 
-      // console.log(response);
+
       var historyCf = {
         "CustomFields": [
           {
@@ -755,7 +768,7 @@ function setPaymentGateway() {
 
     $.ajax(settingstest).done(function (response) {
 
-      // console.log(response);
+
       var historyCf = {
         "CustomFields": [
           {
@@ -814,7 +827,7 @@ function calculatePaymentGateway() {
   $.ajax(settings).done(function (response) {
     payInfo = response["Records"];
   });
-  // console.log(payInfo);
+
 
   var settings2 = {
     "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=1",
@@ -862,7 +875,7 @@ function calculatePaymentGateway() {
       $.each(paymentMethods, function (index, pay) {
         var code = pay["PaymentGateway"]["Code"];
         var payName = getPayName(payInfo, code);
-        // console.log(payName);
+
         if (paymentData[merchant].indexOf(payName) == -1) {
           paymentData[merchant].push(payName);
         }
@@ -876,7 +889,7 @@ function calculatePaymentGateway() {
 }
 
 function getPayName(allPays, code) {
-  // console.log(code);
+
   for (i = 0; i < allPays.length; i++) {
     if (allPays[i]["Code"] == code) {
       return allPays[i]["Gateway"];
@@ -897,7 +910,7 @@ function calculateHistoricalData(userType) {
   var count = 0;
 
   var MegaData = createMegaData(userType);
-  // console.log(MegaData);
+
 
   var settings3 = {
     "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/transactions/?pageSize=1",
@@ -1082,8 +1095,7 @@ function updateFrontEnd(data, tableID) {
 
   var headerRow = document.createElement("tr");
 
-  // data = getTopMerchants();
-  // console.log(data);
+
   keys = Object.keys(data);
 
   headers = data[keys[0]];
@@ -1112,18 +1124,14 @@ function updateFrontEnd(data, tableID) {
   }
 }
 
-// var testData = {"58bc1c9b-ec12-45fc-a327-01ac1315227d":{"Total Revenue":107.5,"Name":"Rachael Chin","Number of Orders":2,"Total Admin Commission":16.125},"2a593ae6-f045-4aab-a18a-18980757a637":{"Total Revenue":149.89999999999998,"Name":"Hombre Cantina","Number of Orders":2,"Total Admin Commission":22.484999999999996},"b716f332-8e10-4b03-b4e3-59459f47f8ab":{"Total Revenue":96.5,"Name":"Simone Wong","Number of Orders":3,"Total Admin Commission":14.475},"a67e93ec-6db7-46a2-ac2c-8a270c3e5c67":{"Total Revenue":106,"Name":"Allen Chng","Number of Orders":5,"Total Admin Commission":15.899999999999999},"ef7f053b-0895-4467-a912-afd782733600":{"Total Revenue":159.6,"Name":"Carrie Er","Number of Orders":4,"Total Admin Commission":23.939999999999998},"240a08f1-6743-4fc7-aac1-b2f32c92a64f":{"Total Revenue":0,"Name":"Joseph  string","Number of Orders":0,"Total Admin Commission":0},"9241526d-f5e2-450e-a945-c0a51fc1b533":{"Total Revenue":0,"Name":"Ubud Ayu","Number of Orders":0,"Total Admin Commission":0},"d5b7b62c-d43f-42c1-afa7-cc23b2dbdc60":{"Total Revenue":0,"Name":"Arcadier Marketing","Number of Orders":0,"Total Admin Commission":0},"f0eb83ce-3fcd-4c4f-9378-fe663f8ba0f4":{"Total Revenue":150,"Name":"Huiyan Rachael (Deleted)","Number of Orders":5,"Total Admin Commission":22.5}};
-//
-// // console.log(JSON.stringify(sortData(testData)));
-// updateFrontEnd(sortData(testData,"Total Revenue"));
 
 function sortData(data, sortingKey) {
   arrayData = Object.keys(data).map(function (key) {
     return [key, data[key][sortingKey]];
   });
-  // console.log(arrayData);
+
   sortedArray = mergesort(arrayData);
-  // console.log(sortedArray);
+
   sortedData = {}
 
   for (var i = 0; i < sortedArray.length; i++) {
