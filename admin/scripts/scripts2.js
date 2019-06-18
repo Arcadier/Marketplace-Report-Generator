@@ -32,9 +32,9 @@ function convertMonthSpecificToCumulative(monthSpecificData) {
     for (year in monthSpecificData) {
         cumulativeJson[year] = {};
         for (month in monthSpecificData[year]) {
-            netTotal = netTotal + monthSpecificData[year][month]['count'];
-            cumulativeJson[year][month] = { 'count': netTotal };
-            cumulativeJson[year][month]['count'] = Math.round(cumulativeJson[year][month]['count'] * 100) / 100;
+            netTotal = netTotal + monthSpecificData[year][month];
+            cumulativeJson[year][month] = netTotal;
+            cumulativeJson[year][month] = Math.round(cumulativeJson[year][month] * 100) / 100;
         }
     }
     return cumulativeJson;
@@ -68,7 +68,7 @@ function retData(metricsArray, dataPassed = true) {
                 if (!megaData[year][month]['time']) {
                     megaData[year][month]['time'] = year.toString() + "-" + month.toString();
                 }
-                megaData[year][month][key] = dataJSON[key][year][month]['count'];
+                megaData[year][month][key] = dataJSON[key][year][month];
             }
         }
     }
@@ -111,47 +111,59 @@ function retDisplayData(megaData, sMonth, sYear, eMonth, eYear) {
 
 
 // retrieving data from user details API and processing it into required form:: Parameters: records- records of the user records, metricsArray - list of user data to be extracted
-function retUserData(records, metricsArray = ["User", "Merchant", "Merchant-Buyer-Ratio"]) {
+function retUserData(records, metricsArray = ["User", "Merchant", "Merchant-Buyer-Ratio"], currMonthOnly = false) {
+
     monthWise = {};
     for (i = 0; i < metricsArray.length; i++) {
         monthWise[metricsArray[i]] = {}
     }
+
     for (i = 0; i < records.length; i++) {
         dt = new Date(records[i]["DateJoined"] * 1000);
+        if (dt.getFullYear() == 2019)
+            console.log("dates===", dt.getFullYear(), dt.getMonth());
+
+
+        monthInner = {}
+        for (j = 0; j < 12; j++) {
+            monthInner[j] = 0;
+        }
+
         for (key in monthWise) {
-            monthInner = {}
-            for (j = 0; j < 12; j++) {
-                monthInner[j] = { "count": 0 };
-            }
             if (!monthWise[key][dt.getUTCFullYear()]) {
-                monthWise[key][dt.getUTCFullYear()] = Object.assign({}, monthInner);
+                monthWise[key][dt.getUTCFullYear()] = monthInner;
             }
         }
+
         for (j = 0; j < records[i]["Roles"].length; j++) {
             if (monthWise[records[i]["Roles"][j]]) {
-                monthWise[records[i]["Roles"][j]][dt.getUTCFullYear()][dt.getUTCMonth()]["count"] += 1;
+                monthWise[records[i]["Roles"][j]][dt.getUTCFullYear()][dt.getUTCMonth()] += 1;
             }
         }
+
+
+
     }
+
     if (monthWise["User"] && monthWise["Merchant"] && monthWise["Merchant-Buyer-Ratio"]) {
         for (year in monthWise['Merchant-Buyer-Ratio']) {
             for (month in monthWise['Merchant-Buyer-Ratio'][year]) {
-                monthWise["Merchant-Buyer-Ratio"][year][month]['count'] = monthWise["Merchant"][year][month]['count'] / (monthWise["User"][year][month]['count'] - monthWise["Merchant"][year][month]['count']);
-                if (!isNaN(monthWise["Merchant-Buyer-Ratio"][year][month]['count']) && monthWise["Merchant-Buyer-Ratio"][year][month]['count'] != Infinity) {
-                    monthWise["Merchant-Buyer-Ratio"][year][month]['count'] = Math.round(monthWise["Merchant-Buyer-Ratio"][year][month]['count'] * 100) / 100;
+                monthWise["Merchant-Buyer-Ratio"][year][month] = monthWise["Merchant"][year][month] / (monthWise["User"][year][month] - monthWise["Merchant"][year][month]);
+                if (!isNaN(monthWise["Merchant-Buyer-Ratio"][year][month]) && monthWise["Merchant-Buyer-Ratio"][year][month] != Infinity) {
+                    monthWise["Merchant-Buyer-Ratio"][year][month] = Math.round(monthWise["Merchant-Buyer-Ratio"][year][month] * 100) / 100;
                 }
                 else {
-                    monthWise["Merchant-Buyer-Ratio"][year][month]['count'] = "not defined";
+                    monthWise["Merchant-Buyer-Ratio"][year][month] = "not defined";
                 }
 
             }
         }
     }
+
     return monthWise;
 }
 
-// retrieving data from transaction history API and processing it into required form :: Parameters: transaction records- records of the transaction history records, metricsArray - list of metrics which need to be counted
-function retTransactionData(transactionRecords, metricsArray = ['GrossMerchandiseValue', 'totalFee', 'Orders', 'itemsRefunded', 'itemsSold']) {
+function retTransactionData(transactionRecords, metricsArray = ['GrossMerchandiseValue', 'totalFee', 'Orders', 'itemsRefunded', 'itemsSold'], currMonthOnly = false) {
     monthWise = {};
     for (i = 0; i < metricsArray.length; i++) {
         monthWise[metricsArray[i]] = {};
@@ -160,39 +172,74 @@ function retTransactionData(transactionRecords, metricsArray = ['GrossMerchandis
         var UTCSec = transactionRecords[i].Orders[0].PaymentDetails[0].DateTimeCreated * 1000;
         dt = new Date(UTCSec);
 
-        for (key in monthWise) {
-            var monthInner = {}
-            for (j = 0; j < 12; j++) {
-                monthInner[j] = { "count": 0 };
+        var monthInner = {}
+        for (j = 0; j < 12; j++) {
+            monthInner[j] = 0;
+        }
+        if (!(currMonthOnly)) {
+            for (key in monthWise) {
+                if (!monthWise[key][dt.getUTCFullYear()]) {
+                    monthWise[key][dt.getUTCFullYear()] = Object.assign({}, monthInner);
+                }
             }
-            if (!monthWise[key][dt.getUTCFullYear()]) {
-                monthWise[key][dt.getUTCFullYear()] = Object.assign({}, monthInner);
+            if (monthWise['GrossMerchandiseValue']) {
+                monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i].Total / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
+                monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] = Math.round(monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] * 100) / 100;
             }
-        }
-        if (monthWise['GrossMerchandiseValue']) {
-            monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] += transactionRecords[i].Total / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
-            monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] = Math.round(monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] * 100) / 100;
-        }
-        if (monthWise['totalFee']) {
-            monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] += transactionRecords[i]["Fee"] / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
-            monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] = Math.round(monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] * 100) / 100;
-        }
-        if (monthWise['Orders']) {
-            monthWise['Orders'][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] += transactionRecords[i].Orders.length;
-        }
+            if (monthWise['totalFee']) {
+                monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i]["Fee"] / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
+                monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] = Math.round(monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] * 100) / 100;
+            }
+            if (monthWise['Orders']) {
+                monthWise['Orders'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i].Orders.length;
+            }
 
-        for (j = 0; j < transactionRecords[i].Orders.length; j++) {
-            if (monthWise['itemsSold']) {
-                if (transactionRecords[i].Orders[j]['CartItemDetails']) {
-                    for (k = 0; k < transactionRecords[i].Orders[j]['CartItemDetails'].length; k++) {
+            for (j = 0; j < transactionRecords[i].Orders.length; j++) {
+                if (monthWise['itemsSold']) {
+                    if (transactionRecords[i].Orders[j]['CartItemDetails']) {
+                        for (k = 0; k < transactionRecords[i].Orders[j]['CartItemDetails'].length; k++) {
 
-                        monthWise["itemsSold"][dt.getUTCFullYear()][dt.getUTCMonth()]['count'] += parseInt(transactionRecords[i].Orders[j]['CartItemDetails'][k]['Quantity']);
+                            monthWise["itemsSold"][dt.getUTCFullYear()][dt.getUTCMonth()] += parseInt(transactionRecords[i].Orders[j]['CartItemDetails'][k]['Quantity']);
+                        }
+                    }
+                }
+                if (monthWise['itemsRefunded']) {
+                    if (transactionRecords[i].Orders[j].PaymentStatus == "Refunded") {
+                        monthWise["itemsRefunded"][dt.getUTCFullYear()][dt.getUTCMonth()] += 1;
                     }
                 }
             }
-            if (monthWise['itemsRefunded']) {
-                if (transactionRecords[i].Orders[j].PaymentStatus == "Refunded") {
-                    monthWise["itemsRefunded"][dt.getUTCFullYear()][dt.getUTCMonth()]["count"] += 1;
+        } else if (dt.getFullYear() == currDay.getFullYear() && dt.getMonth() == currDay.getMonth()) {
+            for (key in monthWise) {
+                if (!monthWise[key][dt.getUTCFullYear()]) {
+                    monthWise[key][dt.getUTCFullYear()] = Object.assign({}, monthInner);
+                }
+            }
+            if (monthWise['GrossMerchandiseValue']) {
+                monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i].Total / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
+                monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] = Math.round(monthWise['GrossMerchandiseValue'][dt.getUTCFullYear()][dt.getUTCMonth()] * 100) / 100;
+            }
+            if (monthWise['totalFee']) {
+                monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i]["Fee"] / transactionRecords[i]["Orders"][0]["PaymentDetails"].length;
+                monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] = Math.round(monthWise['totalFee'][dt.getUTCFullYear()][dt.getUTCMonth()] * 100) / 100;
+            }
+            if (monthWise['Orders']) {
+                monthWise['Orders'][dt.getUTCFullYear()][dt.getUTCMonth()] += transactionRecords[i].Orders.length;
+            }
+
+            for (j = 0; j < transactionRecords[i].Orders.length; j++) {
+                if (monthWise['itemsSold']) {
+                    if (transactionRecords[i].Orders[j]['CartItemDetails']) {
+                        for (k = 0; k < transactionRecords[i].Orders[j]['CartItemDetails'].length; k++) {
+
+                            monthWise["itemsSold"][dt.getUTCFullYear()][dt.getUTCMonth()] += parseInt(transactionRecords[i].Orders[j]['CartItemDetails'][k]['Quantity']);
+                        }
+                    }
+                }
+                if (monthWise['itemsRefunded']) {
+                    if (transactionRecords[i].Orders[j].PaymentStatus == "Refunded") {
+                        monthWise["itemsRefunded"][dt.getUTCFullYear()][dt.getUTCMonth()] += 1;
+                    }
                 }
             }
         }
@@ -234,6 +281,7 @@ function storageAutomation(metricsArray, transactionRecords, userRecords) {
 
     count = 0;
     for (key in processedData1) {
+        // delete processedData1[key][currDay.getFullYear()][currDay.getMonth()];
         createCfImplementationsJSON(name1[count], processedData1[key], currentData1[count]);
         count++;
     }
@@ -247,7 +295,7 @@ function storageAutomation(metricsArray, transactionRecords, userRecords) {
         createCfImplementationsJSON(name3[count], processedData3[key], currentData3[count]);
         count++;
     }
-
+    return Object.assign(processedData1, processedData2, processedData3);
 }
 
 function updateMetricsTime() {
@@ -265,7 +313,6 @@ function updateMetricsTime() {
     }
 
     unformattedJSON = retData(parameterList.concat(extra));
-    console.log(unformattedJSON);
     unformattedJSONcum = massCumulativeDataTime(parameterList.concat(extra));
     unformattedJSONcum = retData(unformattedJSONcum, false);
     if (currentDataTime == 0) {
@@ -327,7 +374,6 @@ function createCfImplementations(cfName, storedData, cf) {
         var settings1 = {
             "url": "https://" + baseUrl + "/api/v2/marketplaces",
             "method": "POST",
-            // "async": false,
             "headers": {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + admintoken
@@ -336,7 +382,6 @@ function createCfImplementations(cfName, storedData, cf) {
         };
 
         $.ajax(settings1).done(function (response) {
-            console.log('stored');
         });
 
     }
@@ -380,7 +425,6 @@ function createCfImplementations(cfName, storedData, cf) {
         var settings3 = {
             "url": "https://" + baseUrl + "/api/v2/marketplaces",
             "method": "POST",
-            // "async": false,
             "headers": {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + admintoken
@@ -389,7 +433,6 @@ function createCfImplementations(cfName, storedData, cf) {
         };
 
         $.ajax(settings3).done(function (response) {
-            console.log('stored');
         });
     }
 
@@ -582,16 +625,18 @@ function startOfProgramTime() {
     var lastDate;
     var lastYear;
     var lastMonth;
+    var lastDay;
     if (monthLastStored) {
         lastDate = JSON.parse(monthLastStored.Values[0]).split("-");
         lastYear = Number(lastDate[0]);
         lastMonth = Number(lastDate[1]);
+        lastDay = Number(lastDate[2]);
     }
     else {
-        lastDate = lastYear = lastMonth = false;
+        lastDate = lastYear = lastDay = lastMonth = false;
     }
     if (currDay.getFullYear() != lastYear && currDay.getMonth() != lastMonth) {
-        createCfImplementationsJSON("MonthName", JSON.stringify(currDay.getFullYear() + "-" + currDay.getMonth()), monthLastStored);
+        createCfImplementationsJSON("MonthName", JSON.stringify(currDay.getFullYear() + "-" + currDay.getMonth() + "-" + currDay.getDay()), monthLastStored);
         storageAutomation(metrics, getRecordsTransactionHistory(), getRecordsUserDetails());
     }
     resetTable(1 - currentDataTime);
@@ -633,53 +678,52 @@ function retCSV(tableDataJson, tableDataJsonCum = null, bool = 0) {
 }
 
 
-function calculateRatio(userRecords, transactionRecords, metrics = ["Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant"]) {
-    if (metrics.length > 1) {
-        var monthWise = {};
-        for (i = 0; i < metrics.length; i++) {
-            monthWise[metrics[i]] = {};
-        }
-
-        processedUserData = convertMonthSpecificToCumulative(retUserData(userRecords, ["Merchant"])['Merchant']);
-        console.log(processedUserData);
-        if (monthWise["Average-Revenue-Per-Merchant"]) {
-            revenue = retTransactionData(transactionRecords, ["GrossMerchandiseValue"]);
-
-            for (year in revenue["GrossMerchandiseValue"]) {
-                if (!monthWise['Average-Revenue-Per-Merchant'][year]) {
-                    monthWise['Average-Revenue-Per-Merchant'][year] = {}
-                }
-                for (month in revenue["GrossMerchandiseValue"][year]) {
-                    monthWise['Average-Revenue-Per-Merchant'][year][month] = { 'count': revenue["GrossMerchandiseValue"][year][month]['count'] / processedUserData[year][month]['count'] };
-                    if (isNaN(monthWise['Average-Revenue-Per-Merchant'][year][month]['count'])) {
-                        monthWise['Average-Revenue-Per-Merchant'][year][month]['count'] = "undefined";
-                    }
-                    else {
-                        monthWise['Average-Revenue-Per-Merchant'][year][month]['count'] = Math.round(monthWise['Average-Revenue-Per-Merchant'][year][month]['count'] * 100) / 100;
-                    }
-                }
-            }
-        }
-
-        if (monthWise["Average-Commission-Fee-Per-Merchant"]) {
-            commission = retTransactionData(transactionRecords, ["totalFee"]);
-
-            for (year in commission["totalFee"]) {
-                if (!monthWise['Average-Commission-Fee-Per-Merchant'][year]) {
-                    monthWise['Average-Commission-Fee-Per-Merchant'][year] = {}
-                }
-                for (month in commission["totalFee"][year]) {
-                    monthWise['Average-Commission-Fee-Per-Merchant'][year][month] = { 'count': commission["totalFee"][year][month]['count'] / processedUserData[year][month]['count'] };
-                    if (isNaN(monthWise['Average-Commission-Fee-Per-Merchant'][year][month]['count'])) {
-                        monthWise['Average-Commission-Fee-Per-Merchant'][year][month]['count'] = "undefined";
-                    } else {
-                        monthWise['Average-Commission-Fee-Per-Merchant'][year][month]['count'] = Math.round(monthWise['Average-Commission-Fee-Per-Merchant'][year][month]['count'] * 100) / 100;
-                    }
-                }
-            }
-        }
-
+function calculateRatio(userRecords, transactionRecords, metrics = ["Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant"], currMonthOnly = false) {
+    var monthWise = {};
+    for (i = 0; i < metrics.length; i++) {
+        monthWise[metrics[i]] = {};
     }
+    monSpecUserData = retUserData(userRecords, ["Merchant"], currMonthOnly);
+    console.log(monSpecUserData);
+    processedUserData = convertMonthSpecificToCumulative(monSpecUserData['Merchant']);
+
+    if (monthWise["Average-Revenue-Per-Merchant"]) {
+        revenue = retTransactionData(transactionRecords, ["GrossMerchandiseValue"], currMonthOnly);
+
+        for (year in revenue["GrossMerchandiseValue"]) {
+            if (!monthWise['Average-Revenue-Per-Merchant'][year]) {
+                monthWise['Average-Revenue-Per-Merchant'][year] = {}
+            }
+            for (month in revenue["GrossMerchandiseValue"][year]) {
+                monthWise['Average-Revenue-Per-Merchant'][year][month] = revenue["GrossMerchandiseValue"][year][month] / processedUserData[year][month];
+                if (isNaN(monthWise['Average-Revenue-Per-Merchant'][year][month])) {
+                    monthWise['Average-Revenue-Per-Merchant'][year][month] = "undefined";
+                }
+                else {
+                    monthWise['Average-Revenue-Per-Merchant'][year][month] = Math.round(monthWise['Average-Revenue-Per-Merchant'][year][month] * 100) / 100;
+                }
+            }
+        }
+    }
+
+    if (monthWise["Average-Commission-Fee-Per-Merchant"]) {
+        commission = retTransactionData(transactionRecords, ["totalFee"], currMonthOnly);
+
+        for (year in commission["totalFee"]) {
+            if (!monthWise['Average-Commission-Fee-Per-Merchant'][year]) {
+                monthWise['Average-Commission-Fee-Per-Merchant'][year] = {}
+            }
+            for (month in commission["totalFee"][year]) {
+                monthWise['Average-Commission-Fee-Per-Merchant'][year][month] = commission["totalFee"][year][month] / processedUserData[year][month];
+                if (isNaN(monthWise['Average-Commission-Fee-Per-Merchant'][year][month])) {
+                    monthWise['Average-Commission-Fee-Per-Merchant'][year][month] = "undefined";
+                } else {
+                    monthWise['Average-Commission-Fee-Per-Merchant'][year][month] = Math.round(monthWise['Average-Commission-Fee-Per-Merchant'][year][month] * 100) / 100;
+                }
+            }
+        }
+    }
+
     return monthWise;
 }
 
@@ -699,6 +743,7 @@ function massCumulativeDataTime(metrics) {
     output = {};
     nonRatio = [];
     ratio = [];
+
     for (i = 0; i < metrics.length; i++) {
         if (["User", "Merchant", 'GrossMerchandiseValue', 'totalFee', 'Orders', 'itemsRefunded', 'itemsSold'].includes(metrics[i])) {
             nonRatio.push(metrics[i]);
@@ -724,12 +769,12 @@ function massCumulativeDataTime(metrics) {
             }
             for (month in cumDataNonRatio['Merchant'][year]) {
 
-                cumDataRatio['Merchant-Buyer-Ratio'][year][month] = { "count": cumDataNonRatio['Merchant'][year][month]['count'] / (cumDataNonRatio['User'][year][month]['count'] - cumDataNonRatio['Merchant'][year][month]['count']) };
-                if (!isNaN(cumDataRatio['Merchant-Buyer-Ratio'][year][month]['count']) && cumDataRatio['Merchant-Buyer-Ratio'][year][month]['count'] != Infinity) {
-                    cumDataRatio['Merchant-Buyer-Ratio'][year][month]['count'] = Math.round(cumDataRatio['Merchant-Buyer-Ratio'][year][month]['count'] * 100) / 100;
+                cumDataRatio['Merchant-Buyer-Ratio'][year][month] = cumDataNonRatio['Merchant'][year][month] / (cumDataNonRatio['User'][year][month] - cumDataNonRatio['Merchant'][year][month]);
+                if (!isNaN(cumDataRatio['Merchant-Buyer-Ratio'][year][month]) && cumDataRatio['Merchant-Buyer-Ratio'][year][month] != Infinity) {
+                    cumDataRatio['Merchant-Buyer-Ratio'][year][month] = Math.round(cumDataRatio['Merchant-Buyer-Ratio'][year][month] * 100) / 100;
                 }
                 else {
-                    cumDataRatio['Merchant-Buyer-Ratio'][year][month]['count'] = "not defined";
+                    cumDataRatio['Merchant-Buyer-Ratio'][year][month] = "not defined";
                 }
             }
         }
@@ -750,12 +795,12 @@ function massCumulativeDataTime(metrics) {
                 cumDataRatio['Average-Revenue-Per-Merchant'][year] = {};
             }
             for (month in gmv[year]) {
-                cumDataRatio['Average-Revenue-Per-Merchant'][year][month] = { "count": gmv[year][month]['count'] / cumDataNonRatio['Merchant'][year][month]['count'] };
-                if (!isNaN(cumDataRatio['Average-Revenue-Per-Merchant'][year][month]['count']) && cumDataRatio['Average-Revenue-Per-Merchant'][year][month]['count'] != Infinity) {
-                    cumDataRatio['Average-Revenue-Per-Merchant'][year][month]['count'] = Math.round(cumDataRatio['Average-Revenue-Per-Merchant'][year][month]['count'] * 100) / 100;
+                cumDataRatio['Average-Revenue-Per-Merchant'][year][month] = gmv[year][month] / cumDataNonRatio['Merchant'][year][month];
+                if (!isNaN(cumDataRatio['Average-Revenue-Per-Merchant'][year][month]) && cumDataRatio['Average-Revenue-Per-Merchant'][year][month] != Infinity) {
+                    cumDataRatio['Average-Revenue-Per-Merchant'][year][month] = Math.round(cumDataRatio['Average-Revenue-Per-Merchant'][year][month] * 100) / 100;
                 }
                 else {
-                    cumDataRatio['Average-Revenue-Per-Merchant'][year][month]['count'] = "not defined";
+                    cumDataRatio['Average-Revenue-Per-Merchant'][year][month] = "not defined";
                 }
             }
         }
@@ -776,16 +821,24 @@ function massCumulativeDataTime(metrics) {
                 cumDataRatio['Average-Commission-Fee-Per-Merchant'][year] = {};
             }
             for (month in gmv[year]) {
-                cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] = { "count": gmv[year][month]['count'] / cumDataNonRatio['Merchant'][year][month]['count'] };
-                if (!isNaN(cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]['count']) && cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]['count'] != Infinity) {
-                    cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]['count'] = Math.round(cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]['count'] * 100) / 100;
+                cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] = gmv[year][month] / cumDataNonRatio['Merchant'][year][month];
+                if (!isNaN(cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]) && cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] != Infinity) {
+                    cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] = Math.round(cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] * 100) / 100;
                 }
                 else {
-                    cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month]['count'] = "not defined";
+                    cumDataRatio['Average-Commission-Fee-Per-Merchant'][year][month] = "not defined";
                 }
             }
         }
     }
 
     return Object.assign(cumDataNonRatio, cumDataRatio);
+}
+
+
+function addCurrentMonthData(metrics, allData, currMonthData) {
+    for (i = 0; i < metrics.length; i++) {
+        allData[metrics[i]][currDay.getFullYear()][currDay.getMonth()] = currMonthData[metrics[i]][currDay.getFullYear()][currDay.getMonth()];
+    }
+    return allData;
 }
