@@ -45,19 +45,9 @@ function getLocation() {
   return locationData;
 }
 
-// $(document).load(function() {
-//      $('#loading').addClass("hide");
-//      $('#mainstuff').removeClass("hide");
-//      // console.log($('#mainstuff'))
-//   });
 
-// $(window).load(function() {
-// 		// Animate loader off screen
-// 		$(".se-pre-con").fadeOut("slow");
-//     $('#mainstuff').removeClass("hide");
-// 	});
 $(document).ready(function () {
-  // $('#mainstuff').addClass("hide");
+
 
   adminID = document.getElementById("userGuid").value;
   MerchantHistory = setHistoricalData("Merchant");
@@ -71,6 +61,7 @@ $(document).ready(function () {
   MerchantCumilHistory = getCumulative(MerchantHistory, "Merchant");
   BuyerCumilHistory = getCumulative(BuyerHistory, "User");
   var megaDataDict = { "Month Specific": { "Merchant": MerchantHistory, "Buyer": BuyerHistory }, "Cumulative": { "Merchant": MerchantCumilHistory, "Buyer": BuyerCumilHistory } };
+
 
 
   $("#dateStartPickerMerchant").on('changeDate', function (selected) {
@@ -202,29 +193,33 @@ $(document).ready(function () {
   }
 
   $("#t-dateStartPicker").on('changeDate', function (selected) {
-    if (selected.date.getFullYear() > startYearMarket || selected.date.getFullYear() == startYearMarket && selected.date.getMonth() > startMonthMarket) {
+    if (selected.date.getFullYear() < startYearMarket || selected.date.getFullYear() == startYearMarket && selected.date.getMonth() < startMonthMarket) {
+      toastr.error("Month selected is before the marketplace's creation", "Incorrect Date");
+    }
+    else if (selected.date.getFullYear() > currDay.getFullYear() || selected.date.getFullYear() == currDay.getFullYear() && selected.date.getMonth() > currDay.getMonth()) {
+      toastr.error("Month selected is after current month", "Incorrect Date");
+    } else {
       startMonthTime = selected.date.getMonth();
       startYearTime = selected.date.getFullYear();
+      if (!endMonthTime) {
+        endMonthTime = currDay.getMonth();
+        endYearTime = currDay.getFullYear();
+      }
+      formattedJSON = retDisplayData(unformattedJSON, startMonthTime, startYearTime, endMonthTime, endYearTime);
+      updateFrontEnd(formattedJSON, 'TimeTable');
     }
-    else {
-      startMonthTime = startMonthMarket;
-      startYearTime = startYearMarket;
-    }
-    formattedJSON = retDisplayData(unformattedJSON, startMonthTime, startYearTime, endMonthTime, endYearTime);
-    updateFrontEnd(formattedJSON, 'TimeTable');
   })
 
 
   $("#t-dateEndPicker").on("changeDate", function (selected) {
-    if ((selected.date.getFullYear() < currDay.getFullYear()) || (selected.date.getFullYear() == currDay.getFullYear() && selected.date.getMonth() <= currDay.getMonth())) {
+    if (selected.date.getFullYear() < startYearMarket || selected.date.getFullYear() == startYearMarket && selected.date.getMonth() < startMonthMarket) {
+      toastr.error("Month selected is before the marketplace's creation", "Incorrect Date");
+    }
+    else if (selected.date.getFullYear() > currDay.getFullYear() || selected.date.getFullYear() == currDay.getFullYear() && selected.date.getMonth() > currDay.getMonth()) {
+      toastr.error("Month selected is after current month", "Incorrect Date");
+    } else if (monthArray[startMonthTime]) {
       endMonthTime = selected.date.getMonth();
       endYearTime = selected.date.getFullYear();
-    }
-    else {
-      endMonthTime = currDay.getMonth();
-      endYearTime = currDay.getFullYear();
-    }
-    if (monthArray[startMonthTime]) {
       formattedJSON = retDisplayData(unformattedJSON, startMonthTime, startYearTime, endMonthTime, endYearTime);
       updateFrontEnd(formattedJSON, 'TimeTable');
     }
