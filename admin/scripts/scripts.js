@@ -45,28 +45,22 @@ function getLocation() {
   return locationData;
 }
 
-// $(document).load(function() {
-//      $('#loading').addClass("hide");
-//      $('#mainstuff').removeClass("hide");
-//      // console.log($('#mainstuff'))
-//   });
 
-// $(window).load(function() {
-// 		// Animate loader off screen
-// 		$(".se-pre-con").fadeOut("slow");
-//     $('#mainstuff').removeClass("hide");
-// 	});
 $(document).ready(function () {
-  // $('#mainstuff').addClass("hide");
 
-  // adminID = document.getElementById("userGuid").value;
-  // MerchantHistory = setHistoricalData("Merchant");
-  // BuyerHistory = setHistoricalData("User");
-  // PaymentHistory = setPaymentGateway();
-  // locationData = setLocation("User");
-  // MerchantCumilHistory = getCumulative(MerchantHistory, "Merchant");
-  // BuyerCumilHistory = getCumulative(BuyerHistory, "User");
-  // var megaDataDict = { "Month Specific": { "Merchant": MerchantHistory, "Buyer": BuyerHistory }, "Cumulative": { "Merchant": MerchantCumilHistory, "Buyer": BuyerCumilHistory } };
+
+  adminID = document.getElementById("userGuid").value;
+  MerchantHistory = setHistoricalData("Merchant");
+  BuyerHistory = setHistoricalData("User");
+  var firstYear = Object.keys(MerchantHistory)[0];
+  var firstMonth = Object.keys(MerchantHistory[firstYear])[0];
+  var currDate = new Date();
+  PaymentHistory = calculatePaymentGateway();
+  locationData = calculateLocation("User");
+  // console.log(MerchantHistory);
+  MerchantCumilHistory = getCumulative(MerchantHistory, "Merchant");
+  BuyerCumilHistory = getCumulative(BuyerHistory, "User");
+  var megaDataDict = { "Month Specific": { "Merchant": MerchantHistory, "Buyer": BuyerHistory }, "Cumulative": { "Merchant": MerchantCumilHistory, "Buyer": BuyerCumilHistory } };
 
 
 
@@ -74,21 +68,30 @@ $(document).ready(function () {
     MerchantdateSelected = true;
     var MerchantTopRanks = document.getElementById("MerchantRankings");
     MerchantselectedDate = new Date(selected.date.valueOf() + 1300000000);
-    MerchantMonthData = megaDataDict[merchantdataType]["Merchant"][MerchantselectedDate.getUTCFullYear()][MerchantselectedDate.getMonth()];
-
-    nMerchants = Object.keys(MerchantMonthData).length;
-    updateRankings(nMerchants, MerchantTopRanks, "All Merchants");
-    var rank = document.getElementById("MerchantChosenRanking").innerHTML.split(' ')[1];
-    if (isNaN(rank)) {
-      rank = Infinity
+    var selectedYear = MerchantselectedDate.getUTCFullYear();
+    var selectedMonth =  MerchantselectedDate.getMonth();
+    if (selectedYear<firstYear || (selectedYear==firstYear && selectedMonth<firstMonth) || selectedYear>currDate.getUTCFullYear() || (selectedYear==currDate.getUTCFullYear() && selectedMonth>currDate.getMonth()))
+    {
+      toastr.error("Marketplace doesn't exist in this time period", "Incorrect Date");
     }
-    else {
-      rank = parseInt(rank);
-    }
-    OptionMerchantMonthData = addOptionsSelected("MerchantOptions");
-    displayedMerchantData = rankings(OptionMerchantMonthData, rank);
+    else
+    {
+      MerchantMonthData = megaDataDict[merchantdataType]["Merchant"][MerchantselectedDate.getUTCFullYear()][MerchantselectedDate.getMonth()];
+      nMerchants = Object.keys(MerchantMonthData).length;
+      updateRankings(nMerchants, MerchantTopRanks, "All Merchants");
+      var rank = document.getElementById("MerchantChosenRanking").innerHTML.split(' ')[1];
+      if (isNaN(rank)) {
+        rank = Infinity
+      }
+      else {
+        rank = parseInt(rank);
+      }
+      OptionMerchantMonthData = addOptionsSelected("MerchantOptions");
+      displayedMerchantData = rankings(OptionMerchantMonthData, rank);
 
-    updateFrontEnd(displayedMerchantData, "MerchantTable");
+      updateFrontEnd(displayedMerchantData, "MerchantTable");
+    }
+
 
   });
 
@@ -96,20 +99,30 @@ $(document).ready(function () {
     BuyerdateSelected = true;
     var BuyerTopRankings = document.getElementById("BuyerRankings");
     BuyerselectedDate = new Date(selected.date.valueOf() + 1300000000);
-    BuyerMonthData = megaDataDict[buyerdataType]["Buyer"][BuyerselectedDate.getUTCFullYear()][BuyerselectedDate.getMonth()];
-    nBuyers = Object.keys(BuyerMonthData).length;
-    updateRankings(nBuyers, BuyerTopRankings, "All Buyers");
-    var rank = document.getElementById("BuyerChosenRanking").innerHTML.split(' ')[1];
-    if (isNaN(rank)) {
-      rank = Infinity
+    var selectedYear = BuyerselectedDate.getUTCFullYear();
+    var selectedMonth = BuyerselectedDate.getMonth();
+    if (selectedYear<firstYear || (selectedYear==firstYear && selectedMonth<firstMonth) || selectedYear>currDate.getUTCFullYear() || (selectedYear==currDate.getUTCFullYear() && selectedMonth>currDate.getMonth()))
+    {
+      toastr.error("Marketplace doesn't exist in this time period", "Incorrect Date");
     }
-    else {
-      rank = parseInt(rank);
-    }
-    OptionBuyerMonthData = addOptionsSelected("BuyerOptions");
-    displayedBuyerData = rankings(OptionBuyerMonthData, rank);
+    else
+    {
+      BuyerMonthData = megaDataDict[buyerdataType]["Buyer"][BuyerselectedDate.getUTCFullYear()][BuyerselectedDate.getMonth()];
+      nBuyers = Object.keys(BuyerMonthData).length;
+      updateRankings(nBuyers, BuyerTopRankings, "All Buyers");
+      var rank = document.getElementById("BuyerChosenRanking").innerHTML.split(' ')[1];
+      if (isNaN(rank)) {
+        rank = Infinity
+      }
+      else {
+        rank = parseInt(rank);
+      }
+      OptionBuyerMonthData = addOptionsSelected("BuyerOptions");
+      displayedBuyerData = rankings(OptionBuyerMonthData, rank);
 
-    updateFrontEnd(displayedBuyerData, "BuyerTable");
+      updateFrontEnd(displayedBuyerData, "BuyerTable");
+    }
+
 
   });
 
@@ -478,7 +491,11 @@ function rankings(data, rank) {
 function setHistoricalData(userType) {
   var HistoricalData;
   var reqData;
+  var kName = keyName[userType];
+  var currDate = new Date();
+  var kName = keyName[userType];
   var cfName = userType.toLowerCase() + "defaulthistory";
+  var cfCode;
   var settings = {
     "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
     "method": "GET",
@@ -493,16 +510,227 @@ function setHistoricalData(userType) {
     $.each(cfs, function (index, cf) {
       if (cf["Name"] == cfName) {
         reqData = JSON.parse(cf["Values"][0]);
+        cfCode = cf["Code"];
       }
     })
   });
 
   if (reqData) {
     HistoricalData = reqData;
+    var years = Object.keys(HistoricalData);
+    var lastYear = parseInt(years[years.length-1]);
+    var months = Object.keys(HistoricalData[lastYear]);
+    var lastMonth = parseInt(months[months.length-1]);
+    var recordSize;
+    var allUsers;
+    var numOfRecords;
+
+
+    var settings2 = {
+      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=1",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer " + token
+      },
+      "async": false
+    };
+
+    $.ajax(settings2).done(function (response) {
+      recordSize = response["TotalRecords"];
+    });
+
+    var settings3 = {
+      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=" + recordSize,
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer " + token
+      },
+      "async": false
+    };
+
+    $.ajax(settings3).done(function (response) {
+      allUsers = response["Records"];
+    });
+
+    $.each(allUsers,function(index,user){
+      if (user["Roles"].indexOf(userType)>-1)
+      {
+        var dateCreated = new Date(user["DateJoined"] * 1000);
+        if (dateCreated.getUTCFullYear()>lastYear || (dateCreated.getUTCFullYear()==lastYear && dateCreated.getMonth()>lastMonth))
+        {
+          if (HistoricalData[dateCreated.getUTCFullYear()]==null)
+          {
+            HistoricalData[dateCreated.getUTCFullYear()] = {};
+          }
+          else if (HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] == null)
+          {
+            HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] = {};
+          }
+
+          HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()][user["ID"]] = { "Name": user["FirstName"] + " " + user["LastName"], [kName]: 0, "Number of Orders": 0, "Total Admin Commission": 0 };
+        }
+      }
+    });
+
+    var prevData = jQuery.extend(true, {}, HistoricalData[lastYear][lastMonth]);
+    var latestUsers = Object.keys(prevData);
+    $.each(latestUsers, function(index,user){
+      prevData[user] = { "Name": prevData[user]["Name"], [kName]: 0, "Number of Orders": 0, "Total Admin Commission": 0 }
+    });
+
+    for (var i = lastYear;i<=currDate.getUTCFullYear();i++)
+    {
+      // console.log("Entered i loop");
+      for (var j = lastMonth+1;j<=currDate.getMonth();j++)
+      {
+        // console.log("Entered j loop");
+        if (HistoricalData[i]==null)
+        {
+          HistoricalData[i] = {};
+        }
+        if (HistoricalData[i][j]==null)
+        {
+          HistoricalData[i][j] = jQuery.extend(true, {}, prevData);
+        }
+        else
+        {
+          HistoricalData[i][j] = jQuery.extend(true, HistoricalData[i][j], prevData);
+        }
+
+        prevData = jQuery.extend(true, {}, HistoricalData[i][j]);
+        // console.log(j);
+      }
+    }
+
+    // console.log(HistoricalData);
+
+    var settings3 = {
+      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/transactions/?pageSize=1",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer " + token
+      },
+      "async": false
+    };
+
+    $.ajax(settings3).done(function (response) {
+      numOfRecords = response["TotalRecords"];
+      // var payment = response["Records"][0]["Orders"][0]["PaymentDetails"][0];
+      // commPercent = payment["Fee"]/(parseFloat(payment["Total"])+parseFloat(payment["Fee"]));
+
+    });
+
+    var settings = {
+      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/transactions/?pageSize=" + numOfRecords,
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer " + token
+      },
+      "async": false
+    };
+
+    $.ajax(settings).done(function (response) {
+      records = response["Records"];
+      $.each(records, function (index, record) {
+
+        var orders = record["Orders"];
+        $.each(orders, function (index, order) {
+          var orderDate = new Date(order["CreatedDateTime"]*1000);
+          if (orderDate.getUTCFullYear()>lastYear || (orderDate.getUTCFullYear()==lastYear  && orderDate.getMonth()>lastMonth))
+          {
+            var payDetails = order["PaymentDetails"];
+            $.each(payDetails, function (index, payDetail) {
+              if (payDetail["InvoiceNo"] == record["InvoiceNo"]) {
+                var orderDate = new Date(payDetail["DateTimeCreated"] * 1000);
+                var orderYear = orderDate.getUTCFullYear();
+                var orderMonth = orderDate.getMonth();
+                var trans = transactionName[userType];
+                var kName = keyName[userType];
+
+                // if (orderYear != currDate.getUTCFullYear() || orderMonth != currDate.getMonth()) {
+                var price = parseFloat(payDetail["Total"]);
+                var fee = parseFloat(payDetail["Fee"]);
+                if (HistoricalData[orderYear] == null) {
+                  HistoricalData[orderYear] = {};
+                }
+                if (HistoricalData[orderYear][orderMonth] == null) {
+                  HistoricalData[orderYear][orderMonth] = {};
+                }
+                if (HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]] == null) {
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]] = {
+                    "Name": payDetail[trans]["FirstName"] + " " + payDetail[trans]["LastName"] + " (Deleted)", [kName]: Math.round(price * 100) / 100,
+                    "Number of Orders": 1,
+                    "Total Admin Commission": Math.round(fee * 100) / 100
+                  }
+                }
+                else {
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] += price;
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] = Math.round(HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] * 100) / 100;
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]]["Number of Orders"]++;
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] += fee;
+                  HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] = Math.round(HistoricalData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] * 100) / 100;
+                }
+
+              }
+            })
+          }
+          else
+          {
+            return;
+          }
+
+
+        })
+      })
+    });
+
+
+    for (var i = lastYear;i<=currDate.getUTCFullYear();i++)
+    {
+      for (var j = lastMonth+1;j<=currDate.getMonth();j++)
+      {
+        HistoricalData[i][j] = sortData(HistoricalData[i][j], keyName[userType]);
+
+      }
+    }
+
+    if (currDate.getUTCFullYear()>=lastYear && currDate.getMonth()-1>lastMonth)
+    {
+      var storingData = jQuery.extend(true, {}, HistoricalData);
+      delete storingData[currDate.getUTCFullYear()][currDate.getMonth()];
+      var historyCf = {
+        "CustomFields": [
+          {
+            "Code": cfCode,
+            "Values": [
+              JSON.stringify(storingData)
+            ]
+          }
+        ]
+      };
+
+      var settings3 = {
+        "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        "data": JSON.stringify(historyCf)
+      };
+
+      $.ajax(settings3).done(function () {
+        console.log("Stored CF Successfully");
+      });
+
+    }
+
   }
 
   else {
     HistoricalData = calculateHistoricalData(userType);
+    var storingData = jQuery.extend(true, {}, HistoricalData);
+    delete storingData[currDate.getUTCFullYear()][currDate.getMonth()];
     var cfData =
     {
       "Name": cfName,
@@ -531,7 +759,7 @@ function setHistoricalData(userType) {
           {
             "Code": response["Code"],
             "Values": [
-              JSON.stringify(HistoricalData)
+              JSON.stringify(storingData)
             ]
           }
         ]
@@ -570,85 +798,85 @@ function setHistoricalData(userType) {
   return HistoricalData;
 }
 
-function setLocation(userType) {
-  var cfName = userType + "locationhistory";
-  var reqData = false;
-  var HistoricalData;
-  var settings = {
-    "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
-    "method": "GET",
-    "headers": {
-      "Authorization": "Bearer " + token
-    },
-    "async": false
-  };
-
-  $.ajax(settings).done(function (response) {
-    var cfs = response["CustomFields"];
-    $.each(cfs, function (index, cf) {
-      if (cf["Name"] == cfName) {
-        reqData = JSON.parse(cf["Values"][0]);
-      }
-    })
-  });
-
-  if (reqData) {
-    HistoricalData = reqData;
-  }
-  else {
-    HistoricalData = calculateLocation(userType);
-    var cfData =
-    {
-      "Name": cfName,
-      "DataInputType": "textfield",
-      "ReferenceTable": "Implementations",
-      "DataFieldType": "string",
-      "IsMandatory": true,
-      "IsSearchable": true
-    };
-
-    var settingstest = {
-      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      "data": JSON.stringify(cfData)
-    };
-
-    $.ajax(settingstest).done(function (response) {
-
-
-      var historyCf = {
-        "CustomFields": [
-          {
-            "Code": response["Code"],
-            "Values": [
-              JSON.stringify(HistoricalData)
-            ]
-          }
-        ]
-      };
-
-      var settings3 = {
-        "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
-        "method": "POST",
-        "headers": {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        "data": JSON.stringify(historyCf)
-      };
-
-      $.ajax(settings3).done(function () {
-        console.log("Stored CF Successfully");
-      });
-    });
-  }
-
-  return HistoricalData;
-}
+// function setLocation(userType) {
+//   var cfName = userType + "locationhistory";
+//   var reqData = false;
+//   var HistoricalData;
+//   var settings = {
+//     "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+//     "method": "GET",
+//     "headers": {
+//       "Authorization": "Bearer " + token
+//     },
+//     "async": false
+//   };
+//
+//   $.ajax(settings).done(function (response) {
+//     var cfs = response["CustomFields"];
+//     $.each(cfs, function (index, cf) {
+//       if (cf["Name"] == cfName) {
+//         reqData = JSON.parse(cf["Values"][0]);
+//       }
+//     })
+//   });
+//
+//   if (reqData) {
+//     HistoricalData = reqData;
+//   }
+//   else {
+//     HistoricalData = calculateLocation(userType);
+//     var cfData =
+//     {
+//       "Name": cfName,
+//       "DataInputType": "textfield",
+//       "ReferenceTable": "Implementations",
+//       "DataFieldType": "string",
+//       "IsMandatory": true,
+//       "IsSearchable": true
+//     };
+//
+//     var settingstest = {
+//       "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
+//       "method": "POST",
+//       "headers": {
+//         "Content-Type": "application/json",
+//         "Authorization": "Bearer " + token
+//       },
+//       "data": JSON.stringify(cfData)
+//     };
+//
+//     $.ajax(settingstest).done(function (response) {
+//
+//
+//       var historyCf = {
+//         "CustomFields": [
+//           {
+//             "Code": response["Code"],
+//             "Values": [
+//               JSON.stringify(HistoricalData)
+//             ]
+//           }
+//         ]
+//       };
+//
+//       var settings3 = {
+//         "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+//         "method": "POST",
+//         "headers": {
+//           "Content-Type": "application/json",
+//           "Authorization": "Bearer " + token
+//         },
+//         "data": JSON.stringify(historyCf)
+//       };
+//
+//       $.ajax(settings3).done(function () {
+//         console.log("Stored CF Successfully");
+//       });
+//     });
+//   }
+//
+//   return HistoricalData;
+// }
 
 function calculateLocation(userType) {
   var locationData = {};
@@ -723,85 +951,85 @@ function handleNull(str) {
     return str;
   }
 }
-function setPaymentGateway() {
-  var cfName = "paymentgatewayhistory";
-  var reqData = false;
-  var HistoricalData;
-  var settings = {
-    "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
-    "method": "GET",
-    "headers": {
-      "Authorization": "Bearer " + token
-    },
-    "async": false
-  };
-
-  $.ajax(settings).done(function (response) {
-    var cfs = response["CustomFields"];
-    $.each(cfs, function (index, cf) {
-      if (cf["Name"] == cfName) {
-        reqData = JSON.parse(cf["Values"][0]);
-      }
-    })
-  });
-
-  if (reqData) {
-    HistoricalData = reqData;
-  }
-  else {
-    HistoricalData = calculatePaymentGateway();
-    var cfData =
-    {
-      "Name": cfName,
-      "DataInputType": "textfield",
-      "ReferenceTable": "Implementations",
-      "DataFieldType": "string",
-      "IsMandatory": true,
-      "IsSearchable": true
-    };
-
-    var settingstest = {
-      "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
-      "method": "POST",
-      "headers": {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      "data": JSON.stringify(cfData)
-    };
-
-    $.ajax(settingstest).done(function (response) {
-
-
-      var historyCf = {
-        "CustomFields": [
-          {
-            "Code": response["Code"],
-            "Values": [
-              JSON.stringify(HistoricalData)
-            ]
-          }
-        ]
-      };
-
-      var settings3 = {
-        "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
-        "method": "POST",
-        "headers": {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        "data": JSON.stringify(historyCf)
-      };
-
-      $.ajax(settings3).done(function () {
-        console.log("Stored CF Successfully");
-      });
-    });
-  }
-
-  return HistoricalData;
-}
+// function setPaymentGateway() {
+//   var cfName = "paymentgatewayhistory";
+//   var reqData = false;
+//   var HistoricalData;
+//   var settings = {
+//     "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+//     "method": "GET",
+//     "headers": {
+//       "Authorization": "Bearer " + token
+//     },
+//     "async": false
+//   };
+//
+//   $.ajax(settings).done(function (response) {
+//     var cfs = response["CustomFields"];
+//     $.each(cfs, function (index, cf) {
+//       if (cf["Name"] == cfName) {
+//         reqData = JSON.parse(cf["Values"][0]);
+//       }
+//     })
+//   });
+//
+//   if (reqData) {
+//     HistoricalData = reqData;
+//   }
+//   else {
+//     HistoricalData = calculatePaymentGateway();
+//     var cfData =
+//     {
+//       "Name": cfName,
+//       "DataInputType": "textfield",
+//       "ReferenceTable": "Implementations",
+//       "DataFieldType": "string",
+//       "IsMandatory": true,
+//       "IsSearchable": true
+//     };
+//
+//     var settingstest = {
+//       "url": "https://" + CORS + baseURL + "/api/v2/admins/" + adminID + "/custom-field-definitions",
+//       "method": "POST",
+//       "headers": {
+//         "Content-Type": "application/json",
+//         "Authorization": "Bearer " + token
+//       },
+//       "data": JSON.stringify(cfData)
+//     };
+//
+//     $.ajax(settingstest).done(function (response) {
+//
+//
+//       var historyCf = {
+//         "CustomFields": [
+//           {
+//             "Code": response["Code"],
+//             "Values": [
+//               JSON.stringify(HistoricalData)
+//             ]
+//           }
+//         ]
+//       };
+//
+//       var settings3 = {
+//         "url": "https://" + CORS + baseURL + "/api/v2/marketplaces",
+//         "method": "POST",
+//         "headers": {
+//           "Content-Type": "application/json",
+//           "Authorization": "Bearer " + token
+//         },
+//         "data": JSON.stringify(historyCf)
+//       };
+//
+//       $.ajax(settings3).done(function () {
+//         console.log("Stored CF Successfully");
+//       });
+//     });
+//   }
+//
+//   return HistoricalData;
+// }
 
 function calculatePaymentGateway() {
   var allMerchants = [];
@@ -875,15 +1103,22 @@ function calculatePaymentGateway() {
       "async": false
     };
     $.ajax(settings5).done(function (response) {
-      var paymentMethods = response["Records"];
-      $.each(paymentMethods, function (index, pay) {
-        var code = pay["PaymentGateway"]["Code"];
-        var payName = getPayName(payInfo, code);
+      if (response["Records"].length==0){
+        paymentData[merchant].push("No registered Payment Gateway");
+      }
+      else
+      {
+        var paymentMethods = response["Records"];
+        $.each(paymentMethods, function (index, pay) {
+          var code = pay["PaymentGateway"]["Code"];
+          var payName = getPayName(payInfo, code);
 
-        if (paymentData[merchant].indexOf(payName) == -1) {
-          paymentData[merchant].push(payName);
-        }
-      });
+          if (paymentData[merchant].indexOf(payName) == -1) {
+            paymentData[merchant].push(payName);
+          }
+        });
+      }
+
     });
   });
 
@@ -957,30 +1192,30 @@ function calculateHistoricalData(userType) {
             var trans = transactionName[userType];
             var kName = keyName[userType];
 
-            if (orderYear != currDate.getUTCFullYear() || orderMonth != currDate.getMonth()) {
-              var price = parseFloat(payDetail["Total"]);
-              var fee = parseFloat(payDetail["Fee"]);
-              if (MegaData[orderYear] == null) {
-                MegaData[orderYear] = {};
-              }
-              if (MegaData[orderYear][orderMonth] == null) {
-                MegaData[orderYear][orderMonth] = {};
-              }
-              if (MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] == null) {
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] = {
-                  "Name": payDetail[trans]["FirstName"] + " " + payDetail[trans]["LastName"] + " (Deleted)", [kName]: Math.round(price * 100) / 100,
-                  "Number of Orders": 1,
-                  "Total Admin Commission": Math.round(fee * 100) / 100
-                }
-              }
-              else {
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] += price;
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] = Math.round(MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] * 100) / 100;
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Number of Orders"]++;
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] += fee;
-                MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] = Math.round(MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] * 100) / 100;
+            // if (orderYear != currDate.getUTCFullYear() || orderMonth != currDate.getMonth()) {
+            var price = parseFloat(payDetail["Total"]);
+            var fee = parseFloat(payDetail["Fee"]);
+            if (MegaData[orderYear] == null) {
+              MegaData[orderYear] = {};
+            }
+            if (MegaData[orderYear][orderMonth] == null) {
+              MegaData[orderYear][orderMonth] = {};
+            }
+            if (MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] == null) {
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]] = {
+                "Name": payDetail[trans]["FirstName"] + " " + payDetail[trans]["LastName"] + " (Deleted)", [kName]: Math.round(price * 100) / 100,
+                "Number of Orders": 1,
+                "Total Admin Commission": Math.round(fee * 100) / 100
               }
             }
+            else {
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] += price;
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] = Math.round(MegaData[orderYear][orderMonth][payDetail[trans]["ID"]][keyName[userType]] * 100) / 100;
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Number of Orders"]++;
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] += fee;
+              MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] = Math.round(MegaData[orderYear][orderMonth][payDetail[trans]["ID"]]["Total Admin Commission"] * 100) / 100;
+            }
+
           }
         })
       })
@@ -1051,15 +1286,20 @@ function createMegaData(userType) {
   minYear = Object.keys(MegaData)[0];
   minMonth = Object.keys(MegaData[minYear])[0];
   var prevData = {};
-
   for (var i = minYear; i <= currDate.getUTCFullYear(); i++) {
-    if (i == minYear) {
+    if (i==minYear && i == currDate.getUTCFullYear())
+    {
+      var startMonth = minMonth;
+      var endMonth = currDate.getMonth();
+
+    }
+    else if (i == minYear) {
       var startMonth = minMonth;
       var endMonth = 11;
     }
     else if (i == currDate.getUTCFullYear()) {
       var startMonth = 0;
-      var endMonth = currDate.getMonth() - 1;
+      var endMonth = currDate.getMonth();
     }
     else {
       var startMonth = 0;
@@ -1077,7 +1317,6 @@ function createMegaData(userType) {
       prevData = jQuery.extend(true, {}, MegaData[i][j]);
     }
   }
-
   return MegaData;
 }
 
