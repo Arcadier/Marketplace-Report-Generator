@@ -69,13 +69,11 @@ $(document).ready(function () {
     var MerchantTopRanks = document.getElementById("MerchantRankings");
     MerchantselectedDate = new Date(selected.date.valueOf() + 1300000000);
     var selectedYear = MerchantselectedDate.getUTCFullYear();
-    var selectedMonth =  MerchantselectedDate.getMonth();
-    if (selectedYear<firstYear || (selectedYear==firstYear && selectedMonth<firstMonth) || selectedYear>currDate.getUTCFullYear() || (selectedYear==currDate.getUTCFullYear() && selectedMonth>currDate.getMonth()))
-    {
+    var selectedMonth = MerchantselectedDate.getMonth();
+    if (selectedYear < firstYear || (selectedYear == firstYear && selectedMonth < firstMonth) || selectedYear > currDate.getUTCFullYear() || (selectedYear == currDate.getUTCFullYear() && selectedMonth > currDate.getMonth())) {
       toastr.error("Marketplace doesn't exist in this time period", "Incorrect Date");
     }
-    else
-    {
+    else {
       MerchantMonthData = megaDataDict[merchantdataType]["Merchant"][MerchantselectedDate.getUTCFullYear()][MerchantselectedDate.getMonth()];
       nMerchants = Object.keys(MerchantMonthData).length;
       updateRankings(nMerchants, MerchantTopRanks, "All Merchants");
@@ -101,12 +99,10 @@ $(document).ready(function () {
     BuyerselectedDate = new Date(selected.date.valueOf() + 1300000000);
     var selectedYear = BuyerselectedDate.getUTCFullYear();
     var selectedMonth = BuyerselectedDate.getMonth();
-    if (selectedYear<firstYear || (selectedYear==firstYear && selectedMonth<firstMonth) || selectedYear>currDate.getUTCFullYear() || (selectedYear==currDate.getUTCFullYear() && selectedMonth>currDate.getMonth()))
-    {
+    if (selectedYear < firstYear || (selectedYear == firstYear && selectedMonth < firstMonth) || selectedYear > currDate.getUTCFullYear() || (selectedYear == currDate.getUTCFullYear() && selectedMonth > currDate.getMonth())) {
       toastr.error("Marketplace doesn't exist in this time period", "Incorrect Date");
     }
-    else
-    {
+    else {
       BuyerMonthData = megaDataDict[buyerdataType]["Buyer"][BuyerselectedDate.getUTCFullYear()][BuyerselectedDate.getMonth()];
       nBuyers = Object.keys(BuyerMonthData).length;
       updateRankings(nBuyers, BuyerTopRankings, "All Buyers");
@@ -226,11 +222,17 @@ $(document).ready(function () {
 
   })
   $("#cumDatePicker").on('changeDate', function (selected) {
-    dateCumMonth = selected.date.getMonth();
-    dateCumYear = selected.date.getFullYear();
-    formattedJSONcum = retDisplayData(unformattedJSONcum, startMonthMarket, startYearMarket, dateCumMonth, dateCumYear);
-    updateFrontEnd(formattedJSONcum, 'TimeTable');
-
+    if (selected.date.getFullYear() < startYearMarket || selected.date.getFullYear() == startYearMarket && selected.date.getMonth() < startMonthMarket) {
+      toastr.error("Month selected is before the marketplace's creation", "Incorrect Date");
+    }
+    else if (selected.date.getFullYear() > currDay.getFullYear() || selected.date.getFullYear() == currDay.getFullYear() && selected.date.getMonth() > currDay.getMonth()) {
+      toastr.error("Month selected is after current month", "Incorrect Date");
+    } else {
+      dateCumMonth = selected.date.getMonth();
+      dateCumYear = selected.date.getFullYear();
+      formattedJSONcum = retDisplayData(unformattedJSONcum, startMonthMarket, startYearMarket, dateCumMonth, dateCumYear);
+      updateFrontEnd(formattedJSONcum, 'TimeTable');
+    }
   })
   // $('#loading').hide();
   $('#loadingdiv').addClass("hide");
@@ -518,9 +520,9 @@ function setHistoricalData(userType) {
   if (reqData) {
     HistoricalData = reqData;
     var years = Object.keys(HistoricalData);
-    var lastYear = parseInt(years[years.length-1]);
+    var lastYear = parseInt(years[years.length - 1]);
     var months = Object.keys(HistoricalData[lastYear]);
-    var lastMonth = parseInt(months[months.length-1]);
+    var lastMonth = parseInt(months[months.length - 1]);
     var recordSize;
     var allUsers;
     var numOfRecords;
@@ -552,18 +554,14 @@ function setHistoricalData(userType) {
       allUsers = response["Records"];
     });
 
-    $.each(allUsers,function(index,user){
-      if (user["Roles"].indexOf(userType)>-1)
-      {
+    $.each(allUsers, function (index, user) {
+      if (user["Roles"].indexOf(userType) > -1) {
         var dateCreated = new Date(user["DateJoined"] * 1000);
-        if (dateCreated.getUTCFullYear()>lastYear || (dateCreated.getUTCFullYear()==lastYear && dateCreated.getMonth()>lastMonth))
-        {
-          if (HistoricalData[dateCreated.getUTCFullYear()]==null)
-          {
+        if (dateCreated.getUTCFullYear() > lastYear || (dateCreated.getUTCFullYear() == lastYear && dateCreated.getMonth() > lastMonth)) {
+          if (HistoricalData[dateCreated.getUTCFullYear()] == null) {
             HistoricalData[dateCreated.getUTCFullYear()] = {};
           }
-          else if (HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] == null)
-          {
+          else if (HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] == null) {
             HistoricalData[dateCreated.getUTCFullYear()][dateCreated.getMonth()] = {};
           }
 
@@ -574,26 +572,21 @@ function setHistoricalData(userType) {
 
     var prevData = jQuery.extend(true, {}, HistoricalData[lastYear][lastMonth]);
     var latestUsers = Object.keys(prevData);
-    $.each(latestUsers, function(index,user){
+    $.each(latestUsers, function (index, user) {
       prevData[user] = { "Name": prevData[user]["Name"], [kName]: 0, "Number of Orders": 0, "Total Admin Commission": 0 }
     });
 
-    for (var i = lastYear;i<=currDate.getUTCFullYear();i++)
-    {
+    for (var i = lastYear; i <= currDate.getUTCFullYear(); i++) {
       // console.log("Entered i loop");
-      for (var j = lastMonth+1;j<=currDate.getMonth();j++)
-      {
+      for (var j = lastMonth + 1; j <= currDate.getMonth(); j++) {
         // console.log("Entered j loop");
-        if (HistoricalData[i]==null)
-        {
+        if (HistoricalData[i] == null) {
           HistoricalData[i] = {};
         }
-        if (HistoricalData[i][j]==null)
-        {
+        if (HistoricalData[i][j] == null) {
           HistoricalData[i][j] = jQuery.extend(true, {}, prevData);
         }
-        else
-        {
+        else {
           HistoricalData[i][j] = jQuery.extend(true, HistoricalData[i][j], prevData);
         }
 
@@ -635,9 +628,8 @@ function setHistoricalData(userType) {
 
         var orders = record["Orders"];
         $.each(orders, function (index, order) {
-          var orderDate = new Date(order["CreatedDateTime"]*1000);
-          if (orderDate.getUTCFullYear()>lastYear || (orderDate.getUTCFullYear()==lastYear  && orderDate.getMonth()>lastMonth))
-          {
+          var orderDate = new Date(order["CreatedDateTime"] * 1000);
+          if (orderDate.getUTCFullYear() > lastYear || (orderDate.getUTCFullYear() == lastYear && orderDate.getMonth() > lastMonth)) {
             var payDetails = order["PaymentDetails"];
             $.each(payDetails, function (index, payDetail) {
               if (payDetail["InvoiceNo"] == record["InvoiceNo"]) {
@@ -674,8 +666,7 @@ function setHistoricalData(userType) {
               }
             })
           }
-          else
-          {
+          else {
             return;
           }
 
@@ -685,17 +676,14 @@ function setHistoricalData(userType) {
     });
 
 
-    for (var i = lastYear;i<=currDate.getUTCFullYear();i++)
-    {
-      for (var j = lastMonth+1;j<=currDate.getMonth();j++)
-      {
+    for (var i = lastYear; i <= currDate.getUTCFullYear(); i++) {
+      for (var j = lastMonth + 1; j <= currDate.getMonth(); j++) {
         HistoricalData[i][j] = sortData(HistoricalData[i][j], keyName[userType]);
 
       }
     }
 
-    if (currDate.getUTCFullYear()>=lastYear && currDate.getMonth()-1>lastMonth)
-    {
+    if (currDate.getUTCFullYear() >= lastYear && currDate.getMonth() - 1 > lastMonth) {
       var storingData = jQuery.extend(true, {}, HistoricalData);
       delete storingData[currDate.getUTCFullYear()][currDate.getMonth()];
       var historyCf = {
@@ -1103,11 +1091,10 @@ function calculatePaymentGateway() {
       "async": false
     };
     $.ajax(settings5).done(function (response) {
-      if (response["Records"].length==0){
+      if (response["Records"].length == 0) {
         paymentData[merchant].push("No registered Payment Gateway");
       }
-      else
-      {
+      else {
         var paymentMethods = response["Records"];
         $.each(paymentMethods, function (index, pay) {
           var code = pay["PaymentGateway"]["Code"];
@@ -1287,8 +1274,7 @@ function createMegaData(userType) {
   minMonth = Object.keys(MegaData[minYear])[0];
   var prevData = {};
   for (var i = minYear; i <= currDate.getUTCFullYear(); i++) {
-    if (i==minYear && i == currDate.getUTCFullYear())
-    {
+    if (i == minYear && i == currDate.getUTCFullYear()) {
       var startMonth = minMonth;
       var endMonth = currDate.getMonth();
 
