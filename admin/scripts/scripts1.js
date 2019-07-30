@@ -1,53 +1,286 @@
+/**
+ * @fileoverview admin side code for the marketplace report generator plugin
+ * 
+ * @author Naseer Ahmed Khan
+ * @author Abhinav Narayana Balasubramaniam
+ */
 
-var baseURL = window.location.hostname;
-var token = getCookie('webapitoken');
+/**
+ * baseURL - This global variable stores the domain name of the marketplace
+ * @type {String}
+ * @global
+ * @constant
+ */
+const baseURL = window.location.hostname;
+
+/**
+ * token - This global variable stores the authorization token for making API calls
+ * @type {String}
+ * @global
+ * @constant
+ */
+const token = getCookie('webapitoken');
+
+/**
+ * adminID - This global variable is meant for the adminID
+ * @type {String}
+ * @global
+ */
 var adminID;
 
+/**
+ * keyName - This is a JSON Object that has useful key value pairs to avoid writing if-else statements
+ * @type {JSON}
+ * @global
+ */
 var keyName = { "Merchant": "Total Revenue", "User": "Total Money Spent" };
+
+/**
+ * transactionName - The name that the API responses use to address merchants and buyers.
+ * @type {JSON}
+ * @global
+ */
 var transactionName = { "Merchant": "Payee", "User": "Payer" };
+
+/**
+ * selectedOptions - This JSON Object stores the options selected by the admin for each of the tables.
+ * @type {JSON}
+ * @global
+ */
 var selectedOptions = { "MerchantOptions": [], "BuyerOptions": [], "ItemOptions": [], "PayOptions": [] };
+
+/**
+ * opt - This JSON Object maps option names to the functions that will get you the option values.
+ * @type {JSON}
+ * @global
+ */
 var opt = { "Location": getLocation, "User Logins": getUserLogin };
 
+
+/**
+ * BuyerHistory - This is a JSON Object that has daily data of the transacton made by each user. There is no
+ * data for the days in which there were no purchases.
+ * @type {JSON}
+ * @global
+ */
 var BuyerHistory;
+
+/**
+ * MerchantHistory - This is a JSON Object that has daily data of the transacton made by each merchant. There is no
+ * data for the days in which there were no purchases.
+ * @type {JSON}
+ * @global
+ */
 var MerchantHistory;
+
+/**
+ * PaymentHistory - This is a JSON Object that has daily data on the transactions made using each payment gateeway.
+ * @type {JSON}
+ * @global
+ */
 var PaymentHistory;
+
+/**
+ * itemHistory - This is a JSON Object that has daily data of for each item. It contains total money spent on that item, total quantity
+ * bought, total number of transactions, and the seller of the item.
+ * @type {JSON}
+ * @global
+ */
 var itemHistory;
 
+/**
+ * locationData - @deprecated
+ */
 var locationData;
+
+/**
+ * loginData - This JSON Object has daily data and maps users to the number of times they logged in that day. If no one logged in on a
+ * particular day, no data is recorded.
+ * @type {JSON}
+ * @global
+ */
 var loginData;
 
+/**
+ * marketplaceStartDate - This is a date Object for the day the marketplace was created. It is initialized to current date but
+ * will be changed later.
+ * @type {Date}
+ * @global
+ */
 var marketplaceStartDate = new Date();
+
+/**
+ * marketplaceEndDate - This is a date Object for the current date.
+ * @type {Date}
+ * @global
+ */
 var marketplaceEndDate = new Date();
+
+/**
+ * merchEndDate - This is a date Obect for the end date the admin choses for the top merchants table.
+ * @type {Date}
+ * @global
+ */
 var merchEndDate = new Date();
+
+/**
+ * buyerEndDate - This is a date Obect for the end date the admin choses for the top users table.
+ * @type {Date}
+ * @global
+ */
 var buyerEndDate = new Date();
+
+/**
+ * payEndDate - This is a date Object for the end date the admin choses for the top payment gateway table.
+ * @type {Date}
+ * @global
+ */
 var payEndDate = new Date();
+
+/**
+ * itemEndDate - This is a date Object for the end date the admin choses for the top items table.
+ * @type {Date}
+ * @global
+ */
 var itemEndDate = new Date();
+
+/**
+ * merchStartDate - This is a date Obect for the start date the admin choses for the top merchants table. This is calculated by subrtacting 1 month
+ * from start date.
+ * @type {Date}
+ * @global
+ */
 var merchStartDate = new Date(merchEndDate - 2592000000);
+
+/**
+ * buyerStartDate - This is a date Obect for the start date the admin choses for the buyer merchants table. This is calculated by subrtacting 1 month
+ * from start date.
+ * @type {Date}
+ * @global
+ */
 var buyerStartDate = new Date(buyerEndDate - 2592000000);
+
+/**
+ * payStartDate - This is a date Obect for the start date the admin choses for the top payment gateway table. This is calculated by subrtacting 1 month
+ * from start date.
+ * @type {Date}
+ * @global
+ */
 var payStartDate = new Date(payEndDate - 2592000000);
+
+/**
+ * ietmStartDate - This is a date Obect for the start date the admin choses for the top items table. This is calculated by subrtacting 1 month
+ * from start date.
+ * @type {Date}
+ * @global
+ */
 var itemStartDate = new Date(itemEndDate - 2592000000);
 
+/**
+ * currDisplay - This is a JSON Object that stores the information of the currently displaying table.
+ * @type {JSON}
+ * @global
+ */
 var currDisplay;
+
+/**
+ * currMerchData - This is a JSON Object that stores merchant data for the time frame admin has picked.
+ * @type {JSON}
+ * @global
+ */
 var currMerchData;
+
+/**
+ * currBuyerData - This is a JSON Object that stores buyer data for the time frame admin has picked.
+ * @type {JSON}
+ * @global
+ */
 var currBuyerData;
+
+/**
+ * currPayData - This is a JSON Object that stores payment gateway data for the time frame admin has picked.
+ * @type {JSON}
+ * @global
+ */
 var currPayData;
+
+/**
+ * currItemData - This is a JSON Object that stores items data for the time frame admin has picked.
+ * @type {JSON}
+ * @global
+ */
 var currItemData;
+
+/**
+ * optionalCurrMerchData - This is a JSON Object that stores merchant data for the picked time frame, with added optional data
+ * @type {JSON}
+ * @global
+ */
 var optionalCurrMerchData;
+
+/**
+ * optionalCurrBuyerData - This is a JSON Object that stores buyer data for the picked time frame, with added optional data
+ * @type {JSON}
+ * @global
+ */
 var optionalCurrBuyerData;
+
+/**
+ * optionalCurrPayData - This is a JSON Object that stores payment gateway data for the picked time frame, with added optional data
+ * @type {JSON}
+ * @global
+ */
 var optionalCurrPayData;
+
+/**
+ * optionalCurrItemData - This is a JSON Object that stores items data for the picked time frame, with added optional data
+ * @type {JSON}
+ * @global
+ */
 var optionalCurrItemData;
 
+/**
+ * MegaData - This is a JSON Object that contains the historical data of users, items and payent gateways
+ * @type {JSON}
+ * @global
+ */
 var MegaData;
+
+/**
+ * currState - This global variable stores the current table the admin is looking at
+ * @type {String}
+ * @global
+ */
 var currState = "Merchants";
+
+/**
+ * allUsers - This JSON Object stores information on all users in the marketplace
+ * @type {JSON}
+ * @global
+ */
 var allUsers;
+
+/**
+ * records - This JSON Object stores information on all the transactions in the history of the marketplace.
+ * @type {JSON}
+ * @global
+ */
 var records;
 
-var chart;
-
+/**
+ * reportType - This global variable stores which type of reprort the admin is viewing. Periodic or Performace
+ * @type {String}
+ * @global
+ */
 var reportType;
 
-var helpDict = { "Rank": "Description for rank", "Name": "Description for name", "Email": "Description for email" };
 
+/**
+ * getCookie - This function takes cookie name and returns the cookie value
+ *
+ * @param  {String} name Cookie name
+ * @return {String}      Cookie Value
+ */
 function getCookie(name) {
     var value = '; ' + document.cookie;
     var parts = value.split('; ' + name + '=');
@@ -56,18 +289,37 @@ function getCookie(name) {
     }
 }
 
-
-
+/**
+ * getPaymentGateway - This function returns the variable PaymentHistory
+ *
+ * @return {JSON}  PaymentHistory
+ */
 function getPaymentGateway() {
     return PaymentHistory;
 }
+
+/**
+ * getLocation - This function returns the variable locationData
+ *
+ * @return {JSON}  locationData
+ */
 function getLocation() {
     return locationData;
 }
+
+/**
+ * getUserLogin - This function returns the variable loginData
+ *
+ * @return {JSON}  loginData
+ */
 function getUserLogin() {
     return loginData;
 }
 
+/**
+ * getFirstDate - @deprecated
+ *
+ */
 function getFirstDate(megaData) {
     var firstYear = Object.keys(megaData)[0];
     var firstMonth = parseInt(Object.keys(megaData[firstYear])[0]) + 1;
@@ -75,29 +327,18 @@ function getFirstDate(megaData) {
     var stringDate = "" + firstMonth + "/" + firstDay + "/" + firstYear;
     return new Date(stringDate);
 }
-function addHelp() {
-    var headings = document.getElementsByTagName("th");
-    for (var i = 0; i < headings.length; i++) {
-        var heading = headings[i];
-        // var c = heading.className;
-        // c+=" tooltip";
-        // heading.className = c;
-        // var helpDiv = document.createElement("div");
-        // helpDiv.className = "tooltip";
-        var help = document.createElement("span");
-        help.className = "tooltiptext";
-        help.innerHTML = helpDict[heading.div.innerHTML];
-        // help.innerHTML = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.q";    // helpDiv.appendChild(help);
-        heading.appendChild(help);
-    }
-}
 
+/**
+ * function to do all the calculations for all the data analysis
+ * 
+ */
 function megaCalculation() {
+    // getting all the records by making api calls
     allUsers = getRecordsUserDetails();
     records = getRecordsTransactionHistory();
 
     adminID = document.getElementById("userGuid").value;
-
+    // calculating all the performance report ddda
     MegaData = createMegaData();
 
     BuyerUsers = MegaData[0];
@@ -113,6 +354,9 @@ function megaCalculation() {
     BuyerHistory = Hist[0];
     PaymentHistory = Hist[1];
     itemHistory = Hist[2];
+
+
+    // TODO: fix the logins for new marketplaces
 
     // locationData =  calculateLocation();
     // loginData = retrieveCfValueJSON("loginCount");
@@ -134,9 +378,10 @@ function megaCalculation() {
     marketplaceStartDate -= 86400000
 
 
-
+    // setting all the required variables
     userRecords = allUsers;
     transactionRecords = records;
+    // calculating all different types of metrics
     userData = retUserData(userRecords);
     transacationData = retTransactionData(transactionRecords);
     perMerchantData = calculateRatio(userRecords, transactionRecords);
@@ -155,10 +400,16 @@ function megaCalculation() {
 
 
 
-
+/**
+ * code which runs after the DOM has been rendered
+ */
 $(document).ready(function () {
-    a = megaCalculation();
+    megaCalculation();
+
+    // TODO: work on currency exchange rates
     console.log(liveCurrencyratesConversion());
+
+    // adding onclicks to the performance selector
     $('body').on('click', '#rank-based', function () {
         reportType = "rank";
         optionalCurrMerchData = addOptionsSelected("MerchantOptions");
@@ -169,14 +420,19 @@ $(document).ready(function () {
         addHelp();
         // // console.log(reportType);
     });
+
+    // adding onclick to the time based selector
     $('body').on('click', '#time-based', function () {
         reportType = "time";
         // // console.log(reportType);
     })
 
+    // adding in functionality to the search bar, searches are performed live whenever a change to the input occurs
     $('#searchBar').on('input', function (e) {
+        // getting the input tag for search bar
         val = document.getElementById('searchBar').value;
-        // // console.log(val);
+
+        // checking out the state currently picked out
         if (currState == "Merchants") {
             var tData = optionalCurrMerchData;
         }
@@ -189,12 +445,14 @@ $(document).ready(function () {
         else {
             var tData = optionalCurrItemData;
         }
+        // setting the table data to the result of the search
         tableData = searchBar(allUsers, tData, val);
-        // // console.log(tableData);
+        // set the table back to normal if search is removed
         if (val.length == 0) {
             tableData = currData;
         }
 
+        // update the table with different performace reports
         if (currState == "Merchants") {
 
             updateFrontEnd(tableData, "merchants-tables", "merchant");
@@ -211,6 +469,7 @@ $(document).ready(function () {
 
     });
 
+    // dynamically changing the number of performace rows based on the number entered in
     $("#merchantTopRanks").on("change", function () {
         optionalCurrMerchData = addOptionsSelected("MerchantOptions");
         currData = rankings(optionalCurrMerchData, $(this).val());
@@ -235,6 +494,7 @@ $(document).ready(function () {
         updateFrontEnd(currData, "pay-tables", "user");
     });
 
+    // setting the type of the performace report
     $("#dataType li a").click(function () {
         currState = $(this).text();
         if (currState == "Buyers") {
@@ -271,6 +531,7 @@ $(document).ready(function () {
         }
     });
 
+    // setting on change functions for start date for performance report of merchants
     $("#merchantStartDateDiv").children("input").on('changeDate', function (selected) {
         merchStartDate = new Date(selected.date.valueOf());
         if (merchEndDate >= merchStartDate) {
@@ -290,6 +551,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for end date for performance report of merchants
     $("#merchantEndtDateDiv").children("input").on('changeDate', function (selected) {
         merchEndDate = new Date(selected.date.valueOf());
         if (merchEndDate >= merchStartDate) {
@@ -302,7 +564,6 @@ $(document).ready(function () {
             else {
                 toastr.error("This marketplace deosn't exist in this time", "Invalid date");
             }
-
         }
         else {
             toastr.error("End date cannot be before start date", "Invalid Date");
@@ -310,6 +571,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for start date for performance report of buyer
     $("#buyerStartDateDiv").children("input").on('changeDate', function (selected) {
         buyerStartDate = new Date(selected.date.valueOf());
 
@@ -330,6 +592,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for end date for performance report of buyer
     $("#buyerEndDateDiv").children("input").on('changeDate', function (selected) {
         buyerEndDate = new Date(selected.date.valueOf());
         if (buyerEndDate >= buyerStartDate) {
@@ -342,7 +605,6 @@ $(document).ready(function () {
             else {
                 toastr.error("This marketplace deosn't exist in this time", "Invalid date");
             }
-
         }
         else {
             toastr.error("End date cannot be before start date", "Invalid Date");
@@ -350,6 +612,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for start date for performance report of items
     $("#itemStartDateDiv").children("input").on('changeDate', function (selected) {
         itemStartDate = new Date(selected.date.valueOf());
 
@@ -370,6 +633,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for end date for performance report of items
     $("#itemEndDateDiv").children("input").on('changeDate', function (selected) {
         itemEndDate = new Date(selected.date.valueOf());
         if (itemEndDate >= itemStartDate) {
@@ -382,7 +646,6 @@ $(document).ready(function () {
             else {
                 toastr.error("This marketplace deosn't exist in this time", "Invalid date");
             }
-
         }
         else {
             toastr.error("End date cannot be before start date", "Invalid Date");
@@ -390,6 +653,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for start date for performance report of payment gateways
     $("#payStartDateDiv").children("input").on('changeDate', function (selected) {
         payStartDate = new Date(selected.date.valueOf());
 
@@ -410,6 +674,7 @@ $(document).ready(function () {
 
     });
 
+    // setting on change functions for end date for performance report of payment gateways
     $("#payEndDateDiv").children("input").on('changeDate', function (selected) {
         payEndDate = new Date(selected.date.valueOf());
         if (payEndDate >= payStartDate) {
@@ -422,7 +687,6 @@ $(document).ready(function () {
             else {
                 toastr.error("This marketplace deosn't exist in this time", "Invalid date");
             }
-
         }
         else {
             toastr.error("End date cannot be before start date", "Invalid Date");
@@ -430,14 +694,18 @@ $(document).ready(function () {
 
     });
 
-
+    // setting the start date to the report
     $(".start").on('changeDate', function (selected) {
         if (selected.date > currDay) {
             toastr.error("Selected day cannot be after current day", "Incorrect Day");
-        } else {
+        } else if (selected.date < new Date(marketplaceStartDate)) {
+            toastr.error("This marketplace deosn't exist in this time", "Invalid date");
+        }
+        else {
             startDateTime = selected.date;
             timeCumulativeData = cumDataConverter(allData, startDateTime, endDateTime, parameterList.concat(extra));
             displayData = makeDisplayData(timeCumulativeData, timeDisplayType);
+            // updating the table, graphing and adding in help bars
             updateFrontEnd(displayData, "time-based-tables", "time", metrics, getGrouping(parameterList.concat(extra)));
             groupGraphs();
             addHelp();
@@ -445,13 +713,18 @@ $(document).ready(function () {
     })
 
 
+    // setting the end date to the report
     $(".end").on("changeDate", function (selected) {
         if (selected.date > currDay) {
             toastr.error("Selected day cannot be after current day", "Incorrect Day");
-        } else if (startDateTime) {
+        } else if (selected.date < new Date(marketplaceStartDate)) {
+            toastr.error("This marketplace deosn't exist in this time", "Invalid date");
+        }
+        else if (startDateTime) {
             endDateTime = selected.date;
             timeCumulativeData = cumDataConverter(allData, startDateTime, endDateTime, parameterList.concat(extra));
             displayData = makeDisplayData(timeCumulativeData, timeDisplayType);
+            // updating the table, graphing and adding in help bars
             updateFrontEnd(displayData, "time-based-tables", "time", metrics, getGrouping(parameterList.concat(extra)));
             groupGraphs();
             addHelp();
@@ -461,6 +734,7 @@ $(document).ready(function () {
         }
     })
 
+    // changing the format of time for periodic reports
     $("body").on("click", "#rank-day", function () {
         timeDisplayType = "day";
     });
@@ -477,6 +751,7 @@ $(document).ready(function () {
         timeDisplayType = "year";
     });
 
+    // setting the report types for rank based and time based
     $('body').on('click', '#rank-based', function () {
         reportType = "rank";
         $("#format").addClass("hide");
@@ -485,54 +760,29 @@ $(document).ready(function () {
         reportType = "time";
         $("#format").removeClass("hide");
     });
+    // adding in the help hovers for every heading
     addHelp();
+    // removing the loading animation after all the API calls and calculations have been done
     $('#loadingdiv').addClass("hide");
     $('#mainstuff').removeClass("hide");
 
-    // console.log("promise returned", a);
 })
 
-
-
-function visualize(tableData, yLines, xMarking) {
-    if (chart) {
-        chart.data.labels = [];
-        chart.data.datasets = [];
-        chart.update();
-    }
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var graphSettings = {
-        "type": "bar",
-        "data": {
-            "labels": [],
-            "datasets": []
-        },
-        "options": {}
-    };
-    for (key in tableData) {
-        graphSettings.data.labels.push(tableData[key][xMarking]);
-    }
-    for (i = 0; i < yLines.length; i++) {
-        var currDataSet = {
-            'label': yLines[i],
-            'borderColor': 'rgb(' + String(Math.round(Math.random() * 255)) + ',' + String(Math.round(Math.random() * 255)) + ',' + String(Math.round(Math.random() * 255)) + ')',
-            'data': []
-        };
-        for (key in tableData) {
-            currDataSet.data.push(tableData[key][yLines[i]]);
-        }
-        graphSettings.data.datasets.push(currDataSet);
-    }
-    chart = new Chart(ctx, graphSettings);
-}
-
+/**
+ * getCumulative - This data takes the daily data of any type of report in perfromance based and a time frame (start date and end date)
+ * and calculates the cumulative data of each merchant/buyer/item/payment gateway in that timeframe. It also takes in data of all the
+ * merchant/buyer/item/payment gateway and sets them to 0 if they dont have any data during this time frame. Then it sorts this data based
+ * on from a particular heading field and returns this JSON Object.
+ *
+ * @param  {JSON} data            Historical data of a particar type of type of Performace metric.
+ * @param  {type} heading         The heading used to sort this data
+ * @param  {type} startDate       The start date picked by the admin
+ * @param  {type} endDate         The end date picked by the admin
+ * @param  {type} userData        All possible merchants/users/items/paymentgateways
+ * @param  {boolean} shallow = false This refers to the size of the data parameter passed in. Most of the historical data is a deep JSON file but some of them are not
+ * @return {JSON}                 a JSON Object that contains sorted data on all merchants/users/items/paymentgateways within the selected timeframe.
+ */
 function getCumulative(data, heading, startDate, endDate, userData, shallow = false) {
-    // var cumilData = jQuery.extend(true, {}, data);
-    //
-    // var years = Object.keys(cumilData);
-    // var firstMonth = Object.keys(cumilData[years[0]])[0];
-    // var firstDay = Object.keys(cumilData[years[0]][firstMonth])[0];
-    // var prevData = jQuery.extend(true, {}, cumilData[years[0]][firstMonth][firstDay]);
 
     var startYear = startDate.getUTCFullYear();
     var startMonth = startDate.getMonth();
@@ -556,7 +806,9 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
     }
 
     var cumulData = jQuery.extend(true, {}, userData);
-
+    //Iterating through all days between start date and end date
+    // Side Note: We realize we could have added a day to a date object and could have made this iteration much simpler,
+    // but we realized that too late and were too lazy change this code. Sorry
     for (var i = startYear; i <= endYear; i++) {
         if (startYear == endYear) {
             var startM = startMonth;
@@ -594,11 +846,9 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
             }
 
             for (var k = startD; k <= endD; k++) {
-                // // console.log(k);
                 if (data[i] != null) {
                     if (data[i][j] != null) {
                         if (data[i][j][k] != null) {
-                            // // console.log("Exists");
                             var dayTransactions = data[i][j][k];
 
                             for (user in dayTransactions) {
@@ -632,7 +882,6 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
                                     }
                                 }
 
-                                // // console.log(jQuery.extend(true, {},cumulData));
 
                             }
                         }
@@ -653,6 +902,11 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
 
 }
 
+/**
+ * getOptionsSelected - This function adds columns to the table data JSON variable and updates the table when the admin clicks save
+ * options.
+ *
+ */
 function getOptionsSelected() {
     var Merchselected = [];
     var options = document.getElementById("merchant-options").getElementsByClassName("fancy-checkbox");
@@ -673,7 +927,6 @@ function getOptionsSelected() {
             Buyerselected.push(options[i + 1].childNodes[0].innerHTML);
         }
     }
-    // console.log(Buyerselected);
 
 
     selectedOptions = { "MerchantOptions": Merchselected, "BuyerOptions": Buyerselected, "PayOptions": [], "ItemOptions": [] };
@@ -694,47 +947,13 @@ function getOptionsSelected() {
 
 }
 
-function retCSV(rankTable, timeTable, type) {
 
-    if (type == "rank") {
-        tableDataJson = rankTable;
-
-    } else {
-        tableDataJson = timeTable;
-
-    }
-
-    // // console.log("type", type);
-    if (tableDataJson) {
-        var CSV = ""
-        var headings = ""
-        var outerKeys = Object.keys(tableDataJson);
-        var headingsJSON = tableDataJson[outerKeys[0]];
-        for (key in headingsJSON) {
-            headings += key.toString() + ",";
-        }
-        headings = headings.slice(0, headings.length - 1) + "\n";
-
-        for (key in tableDataJson) {
-            for (innerKey in tableDataJson[key]) {
-                CSV += "\"" + tableDataJson[key][innerKey].toString() + "\"" + ",";
-            }
-            CSV = CSV.slice(0, CSV.length - 1) + "\n";
-        }
-        CSV = headings + CSV;
-
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(CSV);
-        hiddenElement.target = '_blank';
-        hiddenElement.download = 'Report.csv';
-        hiddenElement.click();
-    }
-    else {
-        toastr.error("Error", "Please select start date and end date")
-    }
-}
-
-
+/**
+ * addOptionsSelected - This function updates the JSON data of merchants or buyers and adds optional columns
+ *
+ * @param  {String} type This can be "Merchants","Buyers","Payemnts"."Items"
+ * @return {JSON}      Table JSON data with added options
+ */
 function addOptionsSelected(type) {
     var newMerchantData = jQuery.extend(true, {}, currMerchData);
     var newBuyerData = jQuery.extend(true, {}, currBuyerData);
@@ -744,11 +963,9 @@ function addOptionsSelected(type) {
 
         var newCol = opt[selectedOptions[type][i]]();
         if (type[0] == "M") {
-            // displayedMerchantData = addOption(displayedMerchantData,newCol,selectedOptions[type][i]);
             newMerchantData = addOption(newMerchantData, newCol, selectedOptions[type][i]);
         }
         else if (type[0] == "B") {
-            // displayedBuyerData = addOption(displayedBuyerData,newCol,selectedOptions[type][i]);
             newBuyerData = addOption(newBuyerData, newCol, selectedOptions[type][i]);
         }
         else if (type[0] == "P") {
@@ -773,8 +990,15 @@ function addOptionsSelected(type) {
     }
 }
 
-
-
+/**
+ * addOption - This function takes in a JSON data, column data and heading name and returns a JSON
+ * Object with added column. 
+ *
+ * @param  {JSON} currData description
+ * @param  {JSON} newCol   description
+ * @param  {String} Heading  description
+ * @return {type}          description
+ */
 function addOption(currData, newCol, Heading) {
 
     var retData = {};
@@ -794,7 +1018,11 @@ function addOption(currData, newCol, Heading) {
     return retData;
 }
 
+/**
+ * function to set the values of the check box inside the popup for columns inside performance reports
+ */
 function setCheckValues() {
+    // setting the values for merchant options
     var options = document.getElementById("merchant-options").getElementsByClassName("fancy-checkbox");
     var inputs = options[0].getElementsByTagName("input");
     var labels = options[0].getElementsByTagName("label");
@@ -808,6 +1036,7 @@ function setCheckValues() {
         }
     }
 
+    // setting the values for buyer options
     var options = document.getElementById("buyer-options").getElementsByClassName("fancy-checkbox");
     var inputs = options[0].getElementsByTagName("input");
     var labels = options[0].getElementsByTagName("label");
@@ -822,7 +1051,11 @@ function setCheckValues() {
     }
 }
 
-
+/**
+ * function which creates rankings table based on the data and ranks passed
+ * @param {JSON} data data of merchants inputed
+ * @param {Array} rank rankings of the merchants inputed
+ */
 function rankings(data, rank) {
     var returnData = {};
 
@@ -840,9 +1073,10 @@ function rankings(data, rank) {
 
 
 
-
+/**
+ * calculate location for each merchant -@deprecated
+ */
 function calculateLocation() {
-    console.log("location api called");
     var locationData = {};
     var users = allUsers;
 
@@ -885,6 +1119,11 @@ function calculateLocation() {
     return locationData;
 }
 
+/**
+ * converting null into empty string 
+ * @param {String} str string which needs to be handled 
+ * @returns {String} returns "" for null otherwise the input
+ */
 function handleNull(str) {
     if (str == null) {
         return "";
@@ -894,7 +1133,11 @@ function handleNull(str) {
     }
 }
 
-
+/**
+ * calculate the historical data for merchants, buyers, payment gateways and items for performance reports
+ * @param {String} userType indicates the type of user whose historical data is needed
+ * @returns {Array} an array of JSON consisting of the historical data of needed metrics
+ */
 function calculateHistoricalData(userType) {
 
     var orderHistory;
@@ -908,9 +1151,6 @@ function calculateHistoricalData(userType) {
 
     // var MegaData = createMegaData(userType);
     var MegaData = {};
-
-
-
 
     $.each(records, function (index, record) {
 
@@ -1031,7 +1271,9 @@ function calculateHistoricalData(userType) {
 }
 
 
-
+/**
+ * function to calculate all the metrics corresponding to users and merchants for performace reports
+ */
 function createMegaData() {
     console.log("create mega data called")
     var MegaDataUser = {};
@@ -1044,9 +1286,7 @@ function createMegaData() {
     var numRec;
     var currDate = new Date();
 
-    // // console.log(allUsers);
     $.each(allUsers, function (index, user) {
-        // // console.log("user", user);
         var dateCreated = new Date(user["DateJoined"] * 1000);
         if (dateCreated < marketplaceStartDate) {
             marketplaceStartDate = dateCreated;
@@ -1140,6 +1380,14 @@ function createMegaData() {
 }
 
 
+/**
+ * makes the data which is being displayed 
+ * @param {JSON} data JSON of the table data which is going to be tablized
+ * @param {String} tableID name of the id given to the table which is going to be updated with the given data 
+ * @param {String} type tells where to append the number of results found  
+ * @param {Array} [sumBlackList=[]] black list which tells which metrics are not going to be added up  
+ * @param {Array} [groupings=false] an array of arrays which tells how to group the columns being tablized, leave empty if groupings are not needed while making the table
+ */
 function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = false) {
 
     var table = document.getElementById(tableID);
@@ -1259,6 +1507,12 @@ function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = fals
 }
 
 
+/**
+ * function to sort the data which is going to be made into the table
+ * @param {JSON} data table data which is going to be sorted
+ * @param {String} sortingKey column which is going to be used as the key parameter to be sorted
+ * @returns {JSON]} table data of the sorted JSON according to the sortingKey selected
+ */
 function sortData(data, sortingKey) {
     arrayData = Object.keys(data).map(function (key) {
         return [key, data[key][sortingKey]];
@@ -1277,11 +1531,20 @@ function sortData(data, sortingKey) {
     return sortedData;
 
 }
-
+/**
+ * returns the 1st element of an array
+ * @param {Array} array array which is taken as input
+ * @returns {*} returns whatever the array has as members
+ */
 function getValue(array) {
     return array[1];
 }
 
+/**
+ * function which carries out mergesort
+ * @param {Array} array unsorted array
+ * @returns {Array} sorted array 
+ */
 function mergesort(array) {
     if (array.length < 2) {
         return array
@@ -1296,6 +1559,12 @@ function mergesort(array) {
     }
 }
 
+/**
+ * merge arrays
+ * @param {Array} array1 first array to be merged
+ * @param {Array} array2 second array to be merged
+ * @returns {Array} the concatenated array
+ */
 function merge(array1, array2) {
     var returnArr = [];
 
@@ -1318,43 +1587,93 @@ function merge(array1, array2) {
     return returnArr;
 }
 
-
-
-function getMonthDays(year, month) {
-    var monthDays = { 0: 31, 1: 28, 2: 31, 3: 30, 4: 31, 5: 30, 6: 31, 7: 31, 8: 30, 9: 31, 10: 30, 11: 31 }
-
-    if (year % 4 == 0 && month == 1 && year % 100 != 0) {
-        return 29
-    }
-    else {
-        return monthDays[month];
-    }
-}
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // Global Variables used in the program
 
-var metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'Total-Admin-Commission', 'Total-Orders', 'Items-Refunded', 'Items-Sold', "Merchant-Buyer-Ratio", "Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant", "Guest-Registered-User-Ratio", "Total-Logins", "Average-Purchases-Per-Buyer", "Average-Order-Value"];
-var optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[11], metrics[12], metrics[13]];
-var parameterList = [metrics[0], metrics[1], metrics[2], metrics[3]];
+/**
+ * An array of all the metrics for periodic reports
+ * @type {Array}
+ * @constant
+ */
+const metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'Total-Admin-Commission', 'Total-Orders', 'Items-Refunded', 'Items-Sold', "Merchant-Buyer-Ratio", "Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant", "Guest-Registered-User-Ratio", "Total-Logins", "Average-Purchases-Per-Buyer", "Average-Order-Value"];
+
+/**
+ * An array of all optional metrics for periodic reports
+ * @type {Array}
+ * @constant
+ */
+const optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[11], metrics[12], metrics[13]];
+
+/**
+ * An array of all base metrics for periodic reports
+ * @type {Array}
+ * @constant
+ */
+const parameterList = [metrics[0], metrics[1], metrics[2], metrics[3]];
+/**
+ * An array of booleans which indicates the checked status of the metrics chosen in the settings table
+ * @type {Array}
+ */
 var checkBoxStatus = [];
+/**
+ * An array containing all extra strings chosen in the options
+ * @type {Array}
+ */
 var extra = [];
+/**
+ * Date Object indicating the start date picked in the start date datepicker
+ * @type {Date}
+ */
 var startDateTime = false;
-var endDateTime = currDay = new Date();
+/**
+ * Date object indicating the end date picked in the end date datepicker, by default set to currDay
+ * @type {Date}
+ */
+var endDateTime = new Date();
+/**
+ * Date object referring to the current day
+ * @type {Date}
+ * @constant
+ */
+const currDay = new Date();
+/**
+ * JSON containing the historical data of all the metrics
+ * @type {JSON}
+ */
 var allData;
+/**
+ * The format in which the periodic reports are being displayed, can be day, week, month, quarter, year 
+ * @type {String}
+ */
 var timeDisplayType = "day";
+/**
+ * Data in the form which can be displayed in the table
+ * @type {JSON}
+ */
 var displayData;
+/**
+ * State variable which indicates whether periodic report/ performance report is selected
+ * @type {String}
+ */
 var reportType;
-var metricGroupings = [
+/**
+ * An array of arrays which indicates the different groups which are being grouped together 
+ * @type {Array}
+ * @constant
+ */
+const metricGroupings = [
     [metrics[0], metrics[1], metrics[7], metrics[10], metrics[11]],
     [metrics[2], metrics[3], metrics[4], metrics[5], metrics[6]],
     [metrics[8], metrics[9], metrics[12], metrics[13]]
 ]
-var helpDict = {
+/**
+ * An array mapping heading names to their explanations
+ * @type {JSON}
+ * @constant
+ */
+const helpDict = {
     [metrics[0]]: "Number of users who joined",
     [metrics[1]]: "Number of merchants who joined",
     [metrics[2]]: "Total value made in the marketing place",
@@ -1372,36 +1691,27 @@ var helpDict = {
     "Rank": "The rank depends on the metric on the immediate right",
     "Name": "Name of the merchant/buyer"
 }
-// ==================================================================================================================================
-// API Calls
-function getCookie(name) {
-    var value = '; ' + document.cookie;
-    var parts = value.split('; ' + name + '=');
-    if (parts.length === 2) {
-        return parts.pop().split(';').shift();
-    }
-}
-
 // TODO: adapt this function to work with page sized more than 1000 transactions
+/**
+ * function to get all the records of users
+ * @returns {Array} an array of all the json objects of user information
+ */
 function getRecordsUserDetails() {
-    console.log("users called")
-
     baseURL = window.location.hostname;
-    adminToken = getCookie("webapitoken");
 
     adminID = document.getElementById("userGuid").value;
 
     var records;
-
+    // making an API call to get the size of the total records
     var settings = {
         "url": "https://" + baseURL + "/api/v2/admins/" + adminID + "/users/?pageSize=1",
         "method": "GET",
         "async": false,
         "headers": {
-            "Authorization": "Bearer " + adminToken
+            "Authorization": "Bearer " + token
         },
     };
-
+    // getting the page size for the next api call
     var pageSize;
     $.ajax(settings).done(function (response) {
         pageSize = response.TotalRecords;
@@ -1411,34 +1721,38 @@ function getRecordsUserDetails() {
         "method": "GET",
         "async": false,
         "headers": {
-            "Authorization": "Bearer " + adminToken
+            "Authorization": "Bearer " + token
         },
     };
+    // records object which is going to be returned
     var records;
     $.ajax(settings2).done(function (response) {
         records = response.Records;
+        return 0;
     });
     return records;
 }
 
-
+/**
+ * return an array of all the transaction records inside the market place
+ * @returns {Array} an array of all the json giving information of transactions
+ */
 function getRecordsTransactionHistory() {
-    console.log("Transaction called");
     adminID = document.getElementById("userGuid").value;
 
     baseURL = window.location.hostname;
-    adminToken = getCookie("webapitoken");
 
     var transactionRecords = [];
     var count = 1;
     var length;
+    // iterating through page numbers untill all the records have beent traversed through
     while (true) {
         var settings1 = {
             "url": "https://" + baseURL + "/api/v2/admins/" + adminID + "/transactions?pageSize=1000&pageNumber=" + count,
             "method": "GET",
             "async": false,
             "headers": {
-                "Authorization": "Bearer " + adminToken
+                "Authorization": "Bearer " + token
             }
         };
 
@@ -1457,16 +1771,19 @@ function getRecordsTransactionHistory() {
     return transactionRecords;
 }
 
-// ==================================================================================================================================
-// Custom Fields
-
+/**
+ * create a custom field inside the implementations and set the value of it
+ * @param {String} cfName name of the custom field whose value needs to be set 
+ * @param {String} storedData value which is going to be stored inside a custom field
+ * @param {JSON|boolean} cf a json object of the existing custom field, false if a custom field doesn't exist 
+ */
 function createCfImplementations(cfName, storedData, cf) {
-    console.log("cf called")
     var baseUrl = document.location.hostname;
     var adminID = document.getElementById("userGuid").value;
-    var admintoken = getCookie('webapitoken');
 
+    // if the custom field already exists
     if (cf) {
+        // body of the json used to make the custom field
         data = {
             "CustomFields": [
                 {
@@ -1477,13 +1794,14 @@ function createCfImplementations(cfName, storedData, cf) {
                 }
             ]
         }
+        // settings of the api call being used to make the api call
         var settings1 = {
             "url": "https://" + baseUrl + "/api/v2/marketplaces",
             "method": "POST",
-            "async": false,
+            // "async": false,
             "headers": {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + admintoken
+                "Authorization": "Bearer " + token
             },
             "data": JSON.stringify(data)
         };
@@ -1491,8 +1809,9 @@ function createCfImplementations(cfName, storedData, cf) {
         $.ajax(settings1);
 
     }
-
+    // if the custom field doesn't already exists 
     else {
+        // the json body to make the post request to make a custom field
         data = {
             "Name": cfName,
             "IsMandatory": true,
@@ -1500,19 +1819,21 @@ function createCfImplementations(cfName, storedData, cf) {
             "ReferenceTable": "Implementations",
             "DataFieldType": "string"
         }
+        // settings used to make the post request to make the custom field
         var settings2 = {
             "url": "https://" + baseUrl + "/api/v2/admins/" + adminID + "/custom-field-definitions",
             "method": "POST",
             "headers": {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + admintoken
+                "Authorization": "Bearer " + token
             },
-            "async": false,
+            // "async": false,
             "data": JSON.stringify(data)
         };
-
+        // making the ajax call to make the custom field definition
         $.ajax(settings2).done(function (response) {
             cf = response;
+            // body to update the newly made custom field
             data2 = {
                 "CustomFields": [
                     {
@@ -1523,17 +1844,18 @@ function createCfImplementations(cfName, storedData, cf) {
                     }
                 ]
             }
+            // settings to update the value of the new custom field
             var settings3 = {
                 "url": "https://" + baseUrl + "/api/v2/marketplaces",
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + admintoken
+                    "Authorization": "Bearer " + token
                 },
-                "async": false,
+                // "async": false,
                 "data": JSON.stringify(data2)
             };
-
+            // making the API call to make the new custom field
             $.ajax(settings3);
         });
 
@@ -1542,32 +1864,40 @@ function createCfImplementations(cfName, storedData, cf) {
 
 }
 
-
+/**
+ * to store in stringified version of the json in a custom field 
+ * @param {String} cfName the name of the custom field to store in the JSON data 
+ * @param {JSON} storedDataJSON JSON which is going to be stored in the custom field
+ * @param {JSON|boolean} cf JSON of the existing custom field, false if it doesn't exist 
+ */
 function createCfImplementationsJSON(cfName, storedDataJSON, cf) {
-    console.log("cf json called");
+    // calling the make custom fields function
     createCfImplementations(cfName, JSON.stringify(storedDataJSON), cf);
 }
 
-
+/**
+ * retrieve the json of the stored stringified custom field
+ * @param {String} cfName the string of the stored custom field
+ * @returns {JSON|boolean} the JSON of the custom field if it exists it returns false if the custom field doesn't exist
+ */
 function retrieveCfValueJSON(cfName) {
-    console.log("retrieve value called")
     var baseUrl = document.location.hostname;
-    var admintoken = getCookie('webapitoken');
-
+    // settings for the api call to return the custom field
     var settings1 = {
         "url": "https://" + baseUrl + "/api/v2/marketplaces",
         "method": "GET",
         "async": false,
         "headers": {
-            "authorization": "Bearer " + admintoken
+            "authorization": "Bearer " + token
         }
 
     }
+    // setting all the marketplace custom fields
     var mpCustomFields = []
     $.ajax(settings1).done(function (response) {
         mpCustomFields = response.CustomFields;
     })
-
+    // finding the required market place custom field
     var cf = null;
     for (i = 0; i < mpCustomFields.length; i++) {
 
@@ -1575,6 +1905,7 @@ function retrieveCfValueJSON(cfName) {
             cf = mpCustomFields[i];
         }
     }
+    // parsing the json if it exists
     if (cf) {
         cf.Values[0] = JSON.parse(cf.Values[0]);
         return cf;
@@ -1583,28 +1914,39 @@ function retrieveCfValueJSON(cfName) {
         return false;
     }
 }
-// ==================================================================================================================================
-// Front end changes
 
+/**
+ * will return the table json of all the filtered data through the search
+ * @param {Array} userRecords records of all the user data obtained from the api call
+ * @param {JSON} tableData json data of the currently displaying table data
+ * @param {String} input string search of what the admin types into the search bar
+ * @returns {JSON} returns the JSON in the format suitable for the table to be called
+ */
 function searchBar(userRecords, tableData, input) {
-    // // console.log(userRecords);
-    // // console.log(tableData);
+    // data which is going to be queried
     var queryData = [];
+    // count variable
     var count = 0
+    // array of all user ids found inside the table
     var userIdArray = [];
+    // array of user ids obtained from direct search on the table
     var requiredUsers1 = [];
+    // array of user ids obtained from user records
     var requiredUsers2 = [];
-    var params = Object.keys(tableData[Object.keys(tableData)[0]])
-    // // console.log(params);
+    // params for the search
+    var params = Object.keys(tableData[Object.keys(tableData)[0]]);
+    // making the json into an array in order to use the fuse search functionality
     for (key in tableData) {
         queryData[count] = $.extend(true, {}, tableData[key]);
         queryData[count]["ID"] = key;
         userIdArray.push(key);
         count++;
     }
+    // setting an additional search feature of full name
     for (i = 0; i < userRecords.length; i++) {
         userRecords[i].FullName = userRecords[i].FirstName + " " + userRecords[i].LastName;
     }
+    // options for the fuse search 
     var options1 = {
         "shouldSort": true,
         "includeScore": true,
@@ -1616,32 +1958,48 @@ function searchBar(userRecords, tableData, input) {
         "minMatchCharLength": 1,
         "keys": ["Name", "FirstName", "LastName", "Email", "DisplayName", "FullName"]
     }
+    // adding in additional keys from the parameters of the table being passed in
     options1.keys = options1.keys.concat(params);
     // // console.log(options1.keys);
+    // fuse search along the table
     var fuse = new Fuse(queryData, options1);
+    // fuse search along the user records
     var fuse2 = new Fuse(userRecords, options1);
+    // results of the fuse searches
     var result1 = fuse.search(input);
     var result2 = fuse2.search(input);
+    // pushing user ids of the fuse search into required users
     for (i = 0; i < result1.length; i++) {
         requiredUsers1.push(result1[i].item.ID);
     }
-
+    // pushing user ids of all the fuse search into the user id array if it belongs to the table
     for (i = 0; i < result2.length; i++) {
         if (userIdArray.includes(result2[i].item.ID)) {
             requiredUsers2.push(result2[i].item.ID);
         };
     }
-
+    // json being outputted
     var output = {};
     var requiredUsers = requiredUsers1.concat(requiredUsers2);
+    // making the output
     for (i = 0; i < requiredUsers.length; i++) {
         output[requiredUsers[i]] = tableData[requiredUsers[i]];
     }
     return output;
 }
 
+
+/**
+ * function to make each single graph
+ * @param {JSON} tableData json containing the information of each table row
+ * @param {Array} yLines array of the names of each y value 
+ * @param {String} xMarking the metric which is going to be used inside the x axis
+ * @param {Node} chartNode the canvas element on which the chart is going to be graphed onto
+ * @returns {Object} a chartjs chart object is returned
+ */
 function singleGraph(tableData, yLines, xMarking, chartNode) {
     var ctx = chartNode.getContext('2d');
+    // settings for the graph which is going to be made
     var graphSettings = {
         "type": "line",
         "data": {
@@ -1650,29 +2008,38 @@ function singleGraph(tableData, yLines, xMarking, chartNode) {
         },
         "options": {}
     };
+    // pushing in all the xvalues which are going to be part of the graph
     for (key in tableData) {
         graphSettings.data.labels.push(tableData[key][xMarking]);
     }
+    // pushing in all the y values which are going to be graphed out
     for (i = 0; i < yLines.length; i++) {
         var currDataSet = {
             'label': yLines[i],
             'borderColor': 'rgb(' + String(Math.round(Math.random() * 255)) + ',' + String(Math.round(Math.random() * 255)) + ',' + String(Math.round(Math.random() * 255)) + ')',
             'data': []
         };
+        // pushing in each individual point into the graph
         for (key in tableData) {
             currDataSet.data.push(tableData[key][yLines[i]]);
         }
+        // pushing the data set into the graph settings
         graphSettings.data.datasets.push(currDataSet);
     }
+    // returning the graph which can be assigned to other elements
     return (new Chart(ctx, graphSettings));
 }
 
+/**
+ * function to make graphs of all the respective graphs sorted by different categories 
+ */
 function groupGraphs() {
-
+    // getting the graph elements
     graphDiv = document.getElementById("graphs");
     graphDiv.innerHTML = "";
+    // getting the groupings as an array
     groupings = getGrouping(parameterList.concat(extra));
-
+    // iterating through the graphs and appending them to the canvas
     for (let i = 1; i < groupings.length; i++) {
         let currCanvas = document.createElement("canvas");
         graphDiv.appendChild(currCanvas);
@@ -1682,8 +2049,11 @@ function groupGraphs() {
     }
 
 }
-
+/**
+ * to switch the table div around and display the graph
+ */
 function flipGraph() {
+    // check if the div with class flipper has the flip class and swap the flip class if it doesn't have it 
     if ($(".flipper").hasClass("flip")) {
         $(".flipper").removeClass("flip");
         $(".front").removeClass("hide");
@@ -1691,10 +2061,14 @@ function flipGraph() {
     else {
         $(".flipper").addClass("flip");
         $(".front").addClass("hide");
+        // make the multiple graphs if the button to visualize was clicked
         groupGraphs();
     }
 }
 
+/**
+ * iterate through the checkboxes inside the settings popup and 
+ */
 function updateMetricsTime() {
     var popUp = document.getElementById("popUpTime");
     var checkBoxes = popUp.getElementsByClassName('fancy-checkbox')
@@ -1714,21 +2088,34 @@ function updateMetricsTime() {
     addHelp();
 }
 
+/**
+ * setting the checkboxvalues to the values saved in the checked options
+ */
 function setCheckBoxValues() {
+    // finding the popup element
     var popUp = document.getElementById("popUpTime");
-    var checkBoxes = popUp.getElementsByClassName('fancy-checkbox')
+    var checkBoxes = popUp.getElementsByClassName('fancy-checkbox');
+    // iterating through all the checkboxes and setting the checkstatus to true if the value is stored in the array
     for (i = 0; i < checkBoxes.length; i++) {
         checkBoxes[i].childNodes[1].checked = checkBoxStatus[i];
     }
 }
-
+/**
+ * make a csv and download it onto the user's client
+ * @param {JSON} rankTable the table data for the performance table
+ * @param {JSON} timeTable the table data for the periodic table
+ * @param {JSON} type the type of table being currently displayed
+ */
 function retCSV(rankTable, timeTable, type) {
+    // setting the respective value
     if (type == "rank") {
         tableDataJson = rankTable;
     } else {
         tableDataJson = timeTable;
     }
+    // check if there is any displaying data
     if (tableDataJson) {
+        // making the csv string and escaping all the necessary characters
         var CSV = "";
         var headings = "";
         var outerKeys = Object.keys(tableDataJson);
@@ -1745,7 +2132,7 @@ function retCSV(rankTable, timeTable, type) {
             CSV = CSV.slice(0, CSV.length - 1) + "\n";
         }
         CSV = headings + CSV;
-
+        // making the download link
         var hiddenElement = document.createElement('a');
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(CSV);
         hiddenElement.target = '_blank';
@@ -1757,18 +2144,18 @@ function retCSV(rankTable, timeTable, type) {
     }
 }
 
-
-
-
-// ==================================================================================================================================
-// calculations of metrics
-
-
+/**
+ * calculating all the necessary user data 
+ * @param {Array} records array of all the user data records 
+ * @param {Array} [metricsArray] a list of metrics which needs to be caluclated
+ * @returns {JSON} JSON data which needs to be returned 
+ */
 function retUserData(records, metricsArray = [metrics[0], metrics[1], metrics[7]]) {
     monthWise = {};
     for (i = 0; i < metricsArray.length; i++) {
         monthWise[metricsArray[i]] = {}
     }
+    // iterating through all the records and calculating the data
     for (i = 0; i < records.length; i++) {
         if (records[i]["Roles"]) {
             dt = new Date(records[i]["DateJoined"] * 1000);
@@ -1796,6 +2183,7 @@ function retUserData(records, metricsArray = [metrics[0], metrics[1], metrics[7]
             }
         }
     }
+    // calculating the ratio data
     if (monthWise[metrics[0]] && monthWise[metrics[1]] && monthWise[metrics[7]]) {
         for (year in monthWise[metrics[0]]) {
             for (month in monthWise[metrics[0]][year]) {
@@ -1809,12 +2197,18 @@ function retUserData(records, metricsArray = [metrics[0], metrics[1], metrics[7]
     return monthWise;
 }
 
-
+/**
+ * gives an array of JSON of all the calulated time data
+ * @param {Array} transactionRecords array of all the transactions which nee 
+ * @param {Array} metricsArray array of all the metrics to be calculated 
+ * @returns {JSON} array of json of all the calculated values
+ */
 function retTransactionData(transactionRecords, metricsArray = [metrics[2], metrics[3], metrics[4], metrics[5], metrics[6]]) {
     monthWise = {};
     for (i = 0; i < metricsArray.length; i++) {
         monthWise[metricsArray[i]] = {};
     }
+    // iterating through the transaction records and calculating all the metrics
     for (i = 0; i < transactionRecords.length; i++) {
         dt = new Date(transactionRecords[i].Orders[0].PaymentDetails[0].DateTimeCreated * 1000);
         for (key in monthWise) {
@@ -1832,19 +2226,22 @@ function retTransactionData(transactionRecords, metricsArray = [metrics[2], metr
                 monthWise[key][dt.getFullYear()][dt.getMonth()][dt.getDate()] = 0;
             }
         }
+        // gross merchandise value calculations
         if (monthWise[metrics[2]]) {
             merchValue = Number(transactionRecords[i].Fee) + Number(transactionRecords[i].Total);
             monthWise[metrics[2]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] += merchValue / transactionRecords[i].Orders[0].PaymentDetails.length;
             monthWise[metrics[2]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] = Math.round(monthWise[metrics[2]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] * 100) / 100;
         }
+        // admin commission fee calculation
         if (monthWise[metrics[3]]) {
             monthWise[metrics[3]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] += transactionRecords[i].Fee / transactionRecords[i].Orders[0].PaymentDetails.length;
             monthWise[metrics[3]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] = Math.round(monthWise[metrics[3]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] * 100) / 100;
         }
+        // total number of orders
         if (monthWise[metrics[4]]) {
             monthWise[metrics[4]][dt.getUTCFullYear()][dt.getUTCMonth()][dt.getDate()] += transactionRecords[i].Orders.length;
         }
-
+        // calculating things inside the orders
         for (j = 0; j < transactionRecords[i].Orders.length; j++) {
             if (monthWise[metrics[6]]) {
                 if (transactionRecords[i].Orders[j].CartItemDetails) {
@@ -1864,15 +2261,22 @@ function retTransactionData(transactionRecords, metricsArray = [metrics[2], metr
     return monthWise;
 }
 
-
+/**
+ * calculating data for the ratio elements
+ * @param {Array} userRecords an array of all the user records
+ * @param {Array} transactionRecords an array of all the transaction records
+ * @param {Array} metricsArray an array of all the metrics which are going to be calculated
+ * @returns {JSON} returns an array of all the average merchant values
+ */
 function calculateRatio(userRecords, transactionRecords, metricsArray = [metrics[8], metrics[9]]) {
     var monthWise = {};
     for (i = 0; i < metricsArray.length; i++) {
         monthWise[metricsArray[i]] = {};
     }
-
+    // getting information time information about the merchants
     processedUserData = retUserData(userRecords, [metrics[1]]);
 
+    // calculating for the first function
     if (monthWise[metrics[8]]) {
         revenue = retTransactionData(transactionRecords, [metrics[2]]);
         for (year in revenue[metrics[2]]) {
@@ -1902,7 +2306,7 @@ function calculateRatio(userRecords, transactionRecords, metricsArray = [metrics
             }
         }
     }
-
+    // calculating for the second function
     if (monthWise[metrics[9]]) {
         commission = retTransactionData(transactionRecords, [metrics[3]]);
 
@@ -1937,8 +2341,14 @@ function calculateRatio(userRecords, transactionRecords, metricsArray = [metrics
     return monthWise;
 }
 
+/**
+ * function which returns an array of all the transaction details
+ * @param {Array} transactionRecords an array of records of all the transaction records
+ * @returns {JSON} json of all time dependent transaction data
+ */
 function calculateTransactions(transactionRecords) {
     output = {};
+    // finding the number of transactions indexed to the history of the marketplace
     for (i = 0; i < transactionRecords.length; i++) {
         var dateObj = new Date(transactionRecords[i].Orders[0].CreatedDateTime * 1000);
         if (!output[dateObj.getFullYear()]) {
@@ -1954,11 +2364,19 @@ function calculateTransactions(transactionRecords) {
 
 
     }
+    // fill in the month data and return the output
     return fillInMonth(output);
 }
 
+/**
+ * function to calculate the average number of purchases per buyer in a marketplace
+ * @param {JSON} transactions JSON of all the time dependent transactions in a marketplace
+ * @param {JSON} buyer JSON of all the historical data of buyers who joined the marketplace
+ * @returns {JSON} returns a JSON object of the historical data of average purchases per buyer
+ */
 function calculateAveragePurchasesPerBuyer(transactions, buyer) {
     var output = {};
+    // iterating through transactions and buyers and calculating the necessary details
     for (year in transactions) {
         output[year] = {};
         for (month in transactions[year]) {
@@ -1980,8 +2398,15 @@ function calculateAveragePurchasesPerBuyer(transactions, buyer) {
     return output;
 }
 
+/**
+ * calculate the historical data for the average value of each order made in the marketplace
+ * @param {JSON} grossMerchandiseValue JSON containing historical data of the GrossMerchandiseValue
+ * @param {JSON} transactions JSON containing the historical data of all transactions
+ * @returns {JSON} returns a JSON containing the historical data of all the orders
+ */
 function calculateAverageOrderValue(grossMerchandiseValue, transactions) {
     var output = {};
+    // iterating through the transactions and gross merchandisvalue to calculate the average order value
     for (year in transactions) {
         output[year] = {};
         for (month in transactions[year]) {
@@ -2002,53 +2427,32 @@ function calculateAverageOrderValue(grossMerchandiseValue, transactions) {
     }
     return output;
 }
-
-function calculateCustomerLifetimeValue(grossMerchandiseValue, buyer) {
-    var output = {};
-    for (year in buyer) {
-        output[year] = {};
-        for (month in buyer[year]) {
-            output[year][month] = {};
-            for (day in buyer[year][month]) {
-                if (grossMerchandiseValue[year][month][day]) {
-                    output[year][month][day] = [buyer[year][month][day], grossMerchandiseValue[year][month][day]];
-                } else {
-                    output[year][month][day] = [buyer[year][month][day], 0];
-                }
-            }
-            for (day in grossMerchandiseValue[year][month]) {
-                if (!output[year][month][day]) {
-                    output[year][month][day] = [0, grossMerchandiseValue[year][month][day]];
-                }
-            }
-        }
-    }
-    return output;
-}
-
+/**
+ * function to generate an array of arrays containing all the metrics which have been grouped into respective groups according to the group
+ * @param {Array} metrics 
+ * @returns an array of array with all the respective groups
+ */
 function getGrouping(metrics) {
     var output = [];
-
+    // checking with the global variables and pushing in only the required variables into the respective groupings
     for (i = 0; i < metricGroupings.length; i++) {
-
         output.push([]);
-
         for (j = 0; j < metrics.length; j++) {
-
             if (metricGroupings[i].includes(metrics[j])) {
-
                 output[i].push(metrics[j]);
-
             }
         }
     }
     output.splice(0, 0, ["Time-Interval"]);
-
     return output;
 }
 
+/**
+ * calculate the ratio of purchases made by guests to registered users(GRU)
+ * @param {JSON} transactionRecords array of JSON containing all transaction details
+ * @returns {JSON} contains JSON of all the historical data of the number of purchases made by guests to registered users
+ */
 function calculateRatioRegisteredBuyers(transactionRecords) {
-    console.log("reg to non reg called")
     var cfData = retrieveCfValueJSON("ratioregisteredtounregistered");
     var baseUrl = document.location.hostname;
     var regToNonReg;
@@ -2060,11 +2464,13 @@ function calculateRatioRegisteredBuyers(transactionRecords) {
 
     var initialMaxTime = new Date(regToNonReg.time * 1000);
     var maxTime = 0;
+    // iterate through all purchases and make api calls to check if the user is a registered user or not and then add values to the required fields
     for (i = 0; i < transactionRecords.length; i++) {
         for (j = 0; j < transactionRecords[i].Orders.length; j++) {
             for (k = 0; k < transactionRecords[i].Orders[j].PaymentDetails.length; k++) {
                 if (transactionRecords[i].Orders[j].PaymentDetails[k].InvoiceNo == transactionRecords[i].InvoiceNo) {
                     var cTime = new Date(transactionRecords[i].Orders[j].PaymentDetails[k].DateTimeCreated * 1000);
+                    // if the time of the transaction is greater than the stored time in the GRU JSON then don't make an api call
                     if (cTime > maxTime) {
                         maxTime = cTime;
                     }
@@ -2113,8 +2519,13 @@ function calculateRatioRegisteredBuyers(transactionRecords) {
     return regToNonReg;
 }
 
-
+/**
+ * make the JSON data for displaying the number of logins
+ * @param {JSON} loginData JSON data of the historical data of all the logins\
+ * @returns {JSON} data made into displayable format
+ */
 function displayLoginCount(loginData) {
+    // manipulating the login data to the required format
     loginData = loginData.Values[0];
     latestDate = loginData.latestData.date.split("-");
     delete loginData.latestData.date;
@@ -2126,20 +2537,8 @@ function displayLoginCount(loginData) {
     };
     loginData.historicalData[latestDate[2]][latestDate[1] - 1][latestDate[0]] = loginData.latestData;
     loginData = loginData.historicalData;
-
-    // var loginYears = Object.keys(loginData);
-    // for (var i = 0; i < loginYears.length; i++) {
-    //     let year = loginYears[i];
-    //     let months = Object.keys(loginData[year]);
-    //     for (var j = 0; j < months.length; j++) {
-    //         var month = parseInt(months[j]);
-    //         loginData[year][month - 1] = $.extend(true, {}, loginData[year][month]);
-    //     }
-    //     delete loginData[year][month];
-    // }
-
-
     output = {};
+    // iterating through login data and adding up the values
     for (year in loginData) {
         output[year] = {};
         for (month in loginData[year]) {
@@ -2152,9 +2551,8 @@ function displayLoginCount(loginData) {
             }
         }
     }
-
+    // filling in years from the start year
     var startYear = new Date(marketplaceStartDate).getFullYear()
-
     for (i = startYear; i < currDay.getFullYear(); i++) {
         if (!output[i]) {
             output[i] = {};
@@ -2165,14 +2563,15 @@ function displayLoginCount(loginData) {
             }
         }
     }
-
-
+    // fill in years with blank data
     return fillInYear(output, new Date(marketplaceStartDate));
 }
 
-
-// ==================================================================================================================================
-// some cumulative data conversion functions
+/**
+ * converts data from month specific data into cumulative data
+ * @param {JSON} monthSpecificData takes in daily data of required metric
+ * @returns {JSON} returns cumulative data of the above
+ */
 function convertMonthSpecificToCumulative(monthSpecificData) {
     var netTotal = 0;
     var cumulativeJson = {}
@@ -2187,7 +2586,16 @@ function convertMonthSpecificToCumulative(monthSpecificData) {
     return cumulativeJson;
 }
 
+/**
+ * function to take in a JSON of all the month specific data and convert into cumulative data going from particular start date to an end date
+ * @param {JSON} msData historical data of all metrics mapped into historical data
+ * @param {Date} startDate start of historical data
+ * @param {Date} endDate end of historical data
+ * @param {Array} options options to check if a particular key should be iterated through correctly
+ * @returns {JSON} cumulative historical data JSON
+ */
 function cumDataConverter(msData, startDate, endDate, options) {
+    // declaring all the data which needs to be just added and all the data which needs to be added in and divided
     var normalData = [metrics[0], metrics[1], metrics[2], metrics[3], metrics[4], metrics[5], metrics[6], metrics[11]];
     var ratioData = [metrics[7], metrics[8], metrics[9], metrics[10], metrics[12], metrics[13]];
 
@@ -2200,6 +2608,7 @@ function cumDataConverter(msData, startDate, endDate, options) {
     var endDay = endDate.getDate();
     // console.log("msData", msData);
     var cmData = {};
+    // iterating through all the keys and all the years, months and days in order to calculate all the cumulative data
     for (key in msData) {
         var netTotal = 0;
         var netTotal2 = 0;
@@ -2283,9 +2692,13 @@ function cumDataConverter(msData, startDate, endDate, options) {
     return cmData;
 }
 
-// ==================================================================================================================================
-// functions for month data
+/**
+ * if a month doesn't exist fill it in with blank data
+ * @param {JSON} timeData JSON which needs to be filled in
+ * @returns {JSON} json with filled in months
+ */
 function fillInMonth(timeData) {
+    // filling in months
     for (year in timeData) {
         for (i = 0; i < 12; i++) {
             if (!timeData[year][i]) {
@@ -2296,6 +2709,12 @@ function fillInMonth(timeData) {
     return timeData;
 }
 
+/**
+ * fill in all the years from the starting of the market place
+ * @param {JSON} timeData JSON of historical data
+ * @param {Date} startMarketPlace date of the starting of the marketplace
+ * @returns {JSON} the JSON containing the filled in historical
+ */
 function fillInYear(timeData, startMarketPlace) {
     var startYear = startMarketPlace.getFullYear();
     for (i = startYear; i < currDay.getFullYear(); i++) {
@@ -2306,21 +2725,58 @@ function fillInYear(timeData, startMarketPlace) {
     return fillInMonth(timeData);
 }
 
-function getMonthDays(year, month) {
-    var monthDays = { 0: 31, 1: 28, 2: 31, 3: 30, 4: 31, 5: 30, 6: 31, 7: 31, 8: 30, 9: 31, 10: 30, 11: 31 }
+/**
+ * function to add in help bars over header tags in the tables
+ */
+function addHelp() {
+    // finding all the header tags
+    var headings = document.getElementsByTagName("th");
+    // iterating through all of them and adding in the explanations over them
+    for (var i = 0; i < headings.length; i++) {
+        var heading = headings[i];
+        var help = document.createElement("span");
+        // making the required explanation tag and appending them to the header tag and appeding it over
+        help.className = "tooltiptext";
+        if (heading.firstElementChild != null) {
+            if (helpDict[heading.firstElementChild.innerText]) {
+                help.innerHTML = helpDict[heading.firstElementChild.innerText];
+            }
+            else {
+                help.innerHTML = "description will be added in later";
+            }
+        }
+        heading.appendChild(help);
+        heading.style.zIndex = 0;
+    }
+}
 
+/**
+ * return the number of days in a particular month in a year
+ * @param {Number} year the year 
+ * @param {Number} month the month
+ * @returns {Number} number of days in a month
+ */
+function getMonthDays(year, month) {
+    // JSON of all days corresponding to months
+    var monthDays = { 0: 31, 1: 28, 2: 31, 3: 30, 4: 31, 5: 30, 6: 31, 7: 31, 8: 30, 9: 31, 10: 30, 11: 31 };
+    // accounting for leap year
     if (year % 4 == 0 && month == 1 && year % 100 != 0 || (year % 400 == 0 && month == 1)) {
-        return 29
+        return 29;
     }
     else {
         return monthDays[month];
     }
 }
 
-// ==================================================================================================================================
-// displaying data
+/**
+ * function to make the different types of display daa
+ * @param {JSON} inputData JSON data which is going to be converted into table displayable format
+ * @param {String} type string which is the type of display data, like "quarterly","monthly","daily"...
+ * @returns {JSON} displayable table data in the required type
+ */
 function makeDisplayData(inputData, type) {
     var outputData = {};
+    // making daily display data
     if (type == "day") {
         for (key in inputData) {
             for (year in inputData[key]) {
@@ -2340,8 +2796,8 @@ function makeDisplayData(inputData, type) {
                 }
             }
         }
-
     }
+    // weekly data
     else if (type == "week") {
         for (key in inputData) {
             count = 0;
@@ -2364,6 +2820,7 @@ function makeDisplayData(inputData, type) {
             }
         }
     }
+    // monthly data
     else if (type == "month") {
         for (key in inputData) {
             for (year in inputData[key]) {
@@ -2382,6 +2839,7 @@ function makeDisplayData(inputData, type) {
             }
         }
     }
+    // quarterly data
     else if (type == "quarter") {
         for (key in inputData) {
             count = 0;
@@ -2404,6 +2862,7 @@ function makeDisplayData(inputData, type) {
             }
         }
     }
+    // yearly data
     else if (type == "year") {
         for (key in inputData) {
             for (year in inputData[key]) {
@@ -2424,7 +2883,11 @@ function makeDisplayData(inputData, type) {
     return outputData;
 }
 
-
+/**
+ * function to make display data for dispaying guest to registered purchase data
+ * @param {JSON} timeData JSON of historical metric data
+ * @returns {JSON} returns the displayable form of the data
+ */
 function displayRegisteredRatio(timeData) {
     for (year in timeData) {
         for (month in timeData[year]) {
@@ -2435,6 +2898,12 @@ function displayRegisteredRatio(timeData) {
     }
     return timeData;
 }
+
+
+
+
+
+
 // ==================================================================================================================================
 
 
@@ -2444,61 +2913,31 @@ function liveCurrencyratesConversion(transactionRecords, base = "AUD") {
 
     var currency;
     var currencies = [];
-    var multicurrency = false;
-    for (var i = 0; i<records.length; i++)
-    {
-      var invoice = records[i];
-      if (i==0)
-      {
-        currencies.push(currency);
-      }
-
-      else if (currencies.indexOf(invoice["CurrencyCode"])==-1)
-      {
-        currencies.push(invoice["CurrencyCode"]);
-        multicurrency = true;
-      }
-
-    }
-    if (multicurrency)
-    {
-      var rates;
-      $.ajax({
-          "url": "https://api.exchangerate-api.com/v4/latest/" + base,
-          "method": "GET",
-          "async  ": false
-      }).done((res) => {
-          rates = res["rates"];
-          console.log(rates);
-      });
-    }
-
-
-}
-
-function addHelp() {
-    var headings = document.getElementsByTagName("th");
-    for (var i = 0; i < headings.length; i++) {
-        var heading = headings[i];
-        // var c = heading.className;
-        // c+=" tooltip";
-        // heading.className = c;
-        // var helpDiv = document.createElement("div");
-        // helpDiv.className = "tooltip";
-        var help = document.createElement("span");
-        help.className = "tooltiptext";
-        if (heading.firstElementChild != null) {
-            if (helpDict[heading.firstElementChild.innerText]) {
-                help.innerHTML = helpDict[heading.firstElementChild.innerText];
-            }
-            else {
-                help.innerHTML = "description will be added in later";
-            }
+    var multicurrency = true;
+    for (var i = 0; i < records.length; i++) {
+        var invoice = records[i];
+        if (i == 0) {
+            currencies.push(currency);
         }
 
-        // // console.log("first child", heading);
-        // help.innerHTML = "Description goes here";    // helpDiv.appendChild(help);
-        heading.appendChild(help);
-        heading.style.zIndex = 0;
+        else if (currencies.indexOf(invoice["CurrencyCode"]) == -1) {
+            currencies.push(invoice["CurrencyCode"]);
+            multicurrency = true;
+        }
+
     }
+    if (multicurrency) {
+        var rates;
+        $.ajax({
+            "url": "https://api.exchangerate-api.com/v4/latest/" + base,
+            "method": "GET",
+            "async  ": false
+        }).done((res) => {
+            rates = res["rates"];
+            console.log(rates);
+        });
+    }
+
+
 }
+
