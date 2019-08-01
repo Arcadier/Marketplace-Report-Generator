@@ -98,6 +98,7 @@ var locationData;
  * particular day, no data is recorded.
  * @type {JSON}
  * @global
+ * @deprecated
  */
 var loginData;
 
@@ -311,6 +312,7 @@ function getLocation() {
  * getUserLogin - This function returns the variable loginData
  *
  * @return {JSON}  loginData
+ * @deprecated
  */
 function getUserLogin() {
     return loginData;
@@ -2522,6 +2524,7 @@ function calculateRatioRegisteredBuyers(transactionRecords) {
  * make the JSON data for displaying the number of logins
  * @param {JSON} loginData JSON data of the historical data of all the logins\
  * @returns {JSON} data made into displayable format
+ * @deprecated
  */
 function displayLoginCount(loginData) {
     // manipulating the login data to the required format
