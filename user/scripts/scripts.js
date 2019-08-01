@@ -1,4 +1,11 @@
 /**
+ * @fileoverview user side code to track the number of logins
+ * @deprecated
+ * 
+ * @author Naseer Ahmed Khand
+ */
+
+/**
  * base url of the window
  * @constant
  * @type {String} 

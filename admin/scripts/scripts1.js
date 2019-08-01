@@ -1604,7 +1604,7 @@ const metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'T
  * @type {Array}
  * @constant
  */
-const optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[11], metrics[12], metrics[13]];
+const optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[12], metrics[13]];
 
 /**
  * An array of all base metrics for periodic reports
@@ -1697,7 +1697,6 @@ const helpDict = {
  * @returns {Array} an array of all the json objects of user information
  */
 function getRecordsUserDetails() {
-    baseURL = window.location.hostname;
 
     adminID = document.getElementById("userGuid").value;
 
@@ -1740,7 +1739,7 @@ function getRecordsUserDetails() {
 function getRecordsTransactionHistory() {
     adminID = document.getElementById("userGuid").value;
 
-    baseURL = window.location.hostname;
+    // baseURL = window.location.hostname;
 
     var transactionRecords = [];
     var count = 1;
