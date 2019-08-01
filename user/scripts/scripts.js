@@ -11,7 +11,7 @@
  * @type {String} 
  * @global
  */
-const baseURL = window.location.hostname;
+var baseURL = window.location.hostname;
 
 /**
  * custom field json value stored here
@@ -40,7 +40,7 @@ var code;
  * @constant
  * @type {String}
  */
-const scriptSrc = document.currentScript.src;
+var scriptSrc = document.currentScript.src;
 
 /**
  * index of the location of the regex
@@ -48,7 +48,7 @@ const scriptSrc = document.currentScript.src;
  * @global
  * @constant
  */
-const index = scriptSrc.search(/\/scripts\//);
+var index = scriptSrc.search(/\/scripts\//);
 
 /**
  * path referring to the package
@@ -56,7 +56,7 @@ const index = scriptSrc.search(/\/scripts\//);
  * @constant
  * @global
  */
-const packagePath = scriptSrc.slice(0, index).trim();
+var packagePath = scriptSrc.slice(0, index).trim();
 
 /**
  * function to update the value of the custom field

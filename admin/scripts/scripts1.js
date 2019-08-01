@@ -11,7 +11,7 @@
  * @global
  * @constant
  */
-const baseURL = window.location.hostname;
+var baseURL = window.location.hostname;
 
 /**
  * token - This global variable stores the authorization token for making API calls
@@ -19,7 +19,7 @@ const baseURL = window.location.hostname;
  * @global
  * @constant
  */
-const token = getCookie('webapitoken');
+var token = getCookie('webapitoken');
 
 /**
  * adminID - This global variable is meant for the adminID
@@ -1599,21 +1599,21 @@ function merge(array1, array2) {
  * @type {Array}
  * @constant
  */
-const metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'Total-Admin-Commission', 'Total-Orders', 'Items-Refunded', 'Items-Sold', "Merchant-Buyer-Ratio", "Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant", "Guest-Registered-User-Ratio", "Total-Logins", "Average-Purchases-Per-Buyer", "Average-Order-Value"];
+var metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'Total-Admin-Commission', 'Total-Orders', 'Items-Refunded', 'Items-Sold', "Merchant-Buyer-Ratio", "Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant", "Guest-Registered-User-Ratio", "Total-Logins", "Average-Purchases-Per-Buyer", "Average-Order-Value"];
 
 /**
  * An array of all optional metrics for periodic reports
  * @type {Array}
  * @constant
  */
-const optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[12], metrics[13]];
+var optionalMetrics = [metrics[4], metrics[6], metrics[5], metrics[7], metrics[8], metrics[9], metrics[10], metrics[12], metrics[13]];
 
 /**
  * An array of all base metrics for periodic reports
  * @type {Array}
  * @constant
  */
-const parameterList = [metrics[0], metrics[1], metrics[2], metrics[3]];
+var parameterList = [metrics[0], metrics[1], metrics[2], metrics[3]];
 /**
  * An array of booleans which indicates the checked status of the metrics chosen in the settings table
  * @type {Array}
@@ -1639,7 +1639,7 @@ var endDateTime = new Date();
  * @type {Date}
  * @constant
  */
-const currDay = new Date();
+var currDay = new Date();
 /**
  * JSON containing the historical data of all the metrics
  * @type {JSON}
@@ -1665,7 +1665,7 @@ var reportType;
  * @type {Array}
  * @constant
  */
-const metricGroupings = [
+var metricGroupings = [
     [metrics[0], metrics[1], metrics[7], metrics[10], metrics[11]],
     [metrics[2], metrics[3], metrics[4], metrics[5], metrics[6]],
     [metrics[8], metrics[9], metrics[12], metrics[13]]
@@ -1675,7 +1675,7 @@ const metricGroupings = [
  * @type {JSON}
  * @constant
  */
-const helpDict = {
+var helpDict = {
     [metrics[0]]: "Number of users who joined",
     [metrics[1]]: "Number of merchants who joined",
     [metrics[2]]: "Total value made in the marketing place",
