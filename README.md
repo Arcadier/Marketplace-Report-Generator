@@ -1,4 +1,4 @@
-# MARKET PLACE REPORT GENERATOR
+# Marketplace Report Generator
 
 The marketplace report generator is an analytics tool which calculates different metrics, which indicate the growth of the marketplace. These metrics are generated in the form of reports. There are two types of reports performance reports and periodic reports. Performance reports show statistics of the top performing merchants, users items and payment gateways. Periodic reports show metrics organized by time durations, metrics such as gross merchandise value, logins, new users are organized by time and is displayed in a report. Periodic reports also have a visualization option which enables you to graph the tables, into respective graphs.
 
@@ -36,3 +36,11 @@ Items are ranked in performance reports, they are ranked by the total amount of 
 ## Periodic reports
 
 Periodic reports show different metrics, sorted by timedurations. The display format of data can either be daily, weekly, monthly, quarterly and yearly, each corresponds to a different time duration. Start date and end date maybe selected, the report generated will contain values of the metrics in the corresponding time duration. The metrics selected by default are total users, total merchants, gross merchandise value and total admin commission. Additional metrics which can be selected are orders, items sold, items refunded, merchant-buyer ratio, average revenue per merchant, average commission fee per merchant, ratio of orders made by registered user to guests, total logins, average purchases per buyer and average order value. The table data maybe sorted by each column. Once the report has been generated, you may visualize the data through a graph or download a CSV containing all the data in spreadsheet format.
+
+![periodic report](marketplace-images/periodic-report.jpg)
+
+### Visualization
+
+You may click the visualization button to view the graph data of the reports generated.
+
+![graph period report](marketplace-images/graph-report.jpg)
