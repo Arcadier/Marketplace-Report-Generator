@@ -363,10 +363,10 @@ function megaCalculation() {
     currDate = temp.getDate() + "-" + (Number(temp.getMonth()) + 1) + "-" + temp.getFullYear();
     // locationData = calculateLocation();
     loginData = retrieveCfValueJSON("loginCount");
-		var loginTemp;
+    var loginTemp;
     if (loginData) {
         loginData = loginData.Values[0];
-				loginTemp = $.extend(true,{},loginData);
+        loginTemp = $.extend(true, {}, loginData);
         latestDate = loginData.latestData.date.split("-");
         delete loginData.latestData.date;
         if (!loginData.historicalData[latestDate[2]]) {
@@ -380,7 +380,7 @@ function megaCalculation() {
         var loginc = { "latestData": { "date": currDate }, "historicalData": {} };
         createCfImplementationsJSON("loginCount", loginc, false);
         loginData = loginc;
-				loginTemp = loginc;
+        loginTemp = loginc;
     }
 
     loginData = loginData.historicalData;
@@ -521,7 +521,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "buyers-tables", "user");
             $("#buyerStartDateDiv").children("input").datepicker("update", buyerStartDate);
             $("#buyerEndDateDiv").children("input").datepicker("update", buyerEndDate);
-						addHelp();
+            addHelp();
         }
         else if (currState == "Merchants") {
             currMerchData = getCumulative(MerchantHistory, keyName["Merchant"], merchStartDate, merchEndDate, MerchantUsers);
@@ -530,7 +530,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "merchants-tables", "merchant");
             $("#merchantStartDateDiv").children("input").datepicker("update", merchStartDate);
             $("#merchantEndtDateDiv").children("input").datepicker("update", merchEndDate);
-						addHelp();
+            addHelp();
         }
         else if (currState == "Payment Gateways") {
             currPayData = getCumulative(PaymentHistory, "Money Transferred", payStartDate, payEndDate, Pays);
@@ -539,7 +539,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "pay-tables", "pay");
             $("#payStartDateDiv").children("input").datepicker("update", payStartDate);
             $("#payEndDateDiv").children("input").datepicker("update", payEndDate);
-						addHelp();
+            addHelp();
         }
         else if (currState == "Items") {
             currItemData = getCumulative(itemHistory, "Number of Transactions", itemStartDate, itemEndDate, Items);
@@ -548,7 +548,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "item-tables", "item");
             $("#itemStartDateDiv").children("input").datepicker("update", itemStartDate);
             $("#itemEndtDateDiv").children("input").datepicker("update", itemEndDate);
-						addHelp();
+            addHelp();
         }
     });
 
@@ -813,130 +813,126 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
     var endMonth = endDate.getMonth();
     var endDay = endDate.getDate();
 
-		console.log("userData",userData);
-		if (Object.keys(data).length)
-		{
-			var firstY = Object.keys(data)[0];
-	    var firstM = Object.keys(data[firstY])[0];
-	    var firstD = Object.keys(data[firstY][firstM])[0];
-	    var firstGuy = Object.keys(data[firstY][firstM][firstD])[0];
-			if (firstGuy)
-			{
-				var sample = data[firstY][firstM][firstD][firstGuy];
-		    var keys = Object.keys(sample);
-					var dataStructure = {};
-			    for (var i = 0; i < keys.length; i++) {
-			        var key = keys[i];
-			        dataStructure[key] = !isNaN(sample[key]);
-			    }
+    console.log("userData", userData);
+    if (Object.keys(data).length) {
+        var firstY = Object.keys(data)[0];
+        var firstM = Object.keys(data[firstY])[0];
+        var firstD = Object.keys(data[firstY][firstM])[0];
+        var firstGuy = Object.keys(data[firstY][firstM][firstD])[0];
+        if (firstGuy) {
+            var sample = data[firstY][firstM][firstD][firstGuy];
+            var keys = Object.keys(sample);
+            var dataStructure = {};
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                dataStructure[key] = !isNaN(sample[key]);
+            }
 
-			    var cumulData = jQuery.extend(true, {}, userData);
-			    //Iterating through all days between start date and end date
-			    // Side Note: We realize we could have added a day to a date object and could have made this iteration much simpler,
-			    // but we realized that too late and were too lazy change this code. Sorry
-			    for (var i = startYear; i <= endYear; i++) {
-			        if (startYear == endYear) {
-			            var startM = startMonth;
-			            var endM = endMonth;
-			        }
-			        else if (i == startYear) {
-			            var startM = startMonth;
-			            var endM = 11;
-			        }
-			        else if (i == endYear) {
-			            var startM = 0;
-			            var endM = endMonth;
-			        }
-			        else {
-			            var startM = 0;
-			            var endM = 11;
-			        }
+            var cumulData = jQuery.extend(true, {}, userData);
+            //Iterating through all days between start date and end date
+            // Side Note: We realize we could have added a day to a date object and could have made this iteration much simpler,
+            // but we realized that too late and were too lazy change this code. Sorry
+            for (var i = startYear; i <= endYear; i++) {
+                if (startYear == endYear) {
+                    var startM = startMonth;
+                    var endM = endMonth;
+                }
+                else if (i == startYear) {
+                    var startM = startMonth;
+                    var endM = 11;
+                }
+                else if (i == endYear) {
+                    var startM = 0;
+                    var endM = endMonth;
+                }
+                else {
+                    var startM = 0;
+                    var endM = 11;
+                }
 
-			        for (var j = startM; j <= endM; j++) {
-			            if (startM == endM && startYear == endYear) {
-			                var startD = startDay;
-			                var endD = endDay;
-			            }
-			            else if (j == startM && i == startYear) {
-			                var startD = startDay;
-			                var endD = getMonthDays(i, j);
-			            }
-			            else if (j == endM && i == endYear) {
-			                var startD = 1;
-			                var endD = endDay;
-			            }
-			            else {
-			                var startD = 1;
-			                var endD = getMonthDays(i, j);
-			            }
+                for (var j = startM; j <= endM; j++) {
+                    if (startM == endM && startYear == endYear) {
+                        var startD = startDay;
+                        var endD = endDay;
+                    }
+                    else if (j == startM && i == startYear) {
+                        var startD = startDay;
+                        var endD = getMonthDays(i, j);
+                    }
+                    else if (j == endM && i == endYear) {
+                        var startD = 1;
+                        var endD = endDay;
+                    }
+                    else {
+                        var startD = 1;
+                        var endD = getMonthDays(i, j);
+                    }
 
-			            for (var k = startD; k <= endD; k++) {
-			                if (data[i] != null) {
-			                    if (data[i][j] != null) {
-			                        if (data[i][j][k] != null) {
-			                            var dayTransactions = data[i][j][k];
+                    for (var k = startD; k <= endD; k++) {
+                        if (data[i] != null) {
+                            if (data[i][j] != null) {
+                                if (data[i][j][k] != null) {
+                                    var dayTransactions = data[i][j][k];
 
-			                            for (user in dayTransactions) {
-			                                if (shallow) {
+                                    for (user in dayTransactions) {
+                                        if (shallow) {
 
-			                                    if (cumulData[user] == null) {
+                                            if (cumulData[user] == null) {
 
-			                                        cumulData[user] = dayTransactions[user];
-			                                    }
-			                                    else {
-			                                        cumulData[user] += dayTransactions[user];
-			                                    }
-			                                }
-			                                else {
-			                                    if (cumulData[user] == null) {
-			                                        cumulData[user] = {};
-			                                        for (var l = 0; l < keys.length; l++) {
-			                                            var key = keys[l];
-			                                            cumulData[user][key] = dayTransactions[user][key];
+                                                cumulData[user] = dayTransactions[user];
+                                            }
+                                            else {
+                                                cumulData[user] += dayTransactions[user];
+                                            }
+                                        }
+                                        else {
+                                            if (cumulData[user] == null) {
+                                                cumulData[user] = {};
+                                                for (var l = 0; l < keys.length; l++) {
+                                                    var key = keys[l];
+                                                    cumulData[user][key] = dayTransactions[user][key];
 
-			                                        }
-			                                    }
-			                                    else {
-			                                        for (var l = 0; l < keys.length; l++) {
-			                                            var key = keys[l];
-			                                            if (dataStructure[key]) {
-			                                                cumulData[user][key] += dayTransactions[user][key];
-			                                                cumulData[user][key] = Math.round(cumulData[user][key] * 100) / 100;
-			                                            }
-			                                        }
-			                                    }
-			                                }
+                                                }
+                                            }
+                                            else {
+                                                for (var l = 0; l < keys.length; l++) {
+                                                    var key = keys[l];
+                                                    if (dataStructure[key]) {
+                                                        cumulData[user][key] += dayTransactions[user][key];
+                                                        cumulData[user][key] = Math.round(cumulData[user][key] * 100) / 100;
+                                                    }
+                                                }
+                                            }
+                                        }
 
 
-			                            }
-			                        }
-			                    }
-			                }
+                                    }
+                                }
+                            }
+                        }
 
 
-			            }
-			        }
-			    }
+                    }
+                }
+            }
 
-			    if (shallow) {
-			        return cumulData;
-			    }
-			    else {
-			        return sortData(cumulData, heading);
-			    }
-			}
-			else
-			{
-				return {};
-			}
+            if (shallow) {
+                return cumulData;
+            }
+            else {
+                return sortData(cumulData, heading);
+            }
+        }
+        else {
+            return {};
+        }
 
 
 
-		}
-		else
-		{
-			return {}
-		}
+    }
+    else {
+        return {}
+    }
 
 
 }
@@ -1713,20 +1709,19 @@ var metricGroupings = [
  * @constant
  */
 var helpDict = {
-    [metrics[0]]: "Number of users who joined",
-    [metrics[1]]: "Number of merchants who joined",
-    [metrics[2]]: "Total value made in the marketing place",
-    [metrics[3]]: "The total commision made by the admin",
-    [metrics[4]]: "Number of orders",
-    [metrics[5]]: "Total number of items refunded",
-    [metrics[6]]: "Total number of items sold",
-    [metrics[7]]: "Ratio of merchants to buyers",
-    [metrics[8]]: "The average revenue earned by a merchant",
-    [metrics[9]]: "The average commission earned by an administrator",
-    [metrics[10]]: "Ratio of purchases made by guest users to that made by registered users",
-    [metrics[11]]: "Total number of logins in a particular time perion(calculation of logins only starts after the plugin has been installed)",
-    [metrics[12]]: "The average number of purchases made by a buyer",
-    [metrics[13]]: "The average value of an order",
+    [metrics[0]]: "Total number of users who joined from the start date until the indicated time",
+    [metrics[1]]: "Total number of merchants who joined from the start date until the indicated time    ",
+    [metrics[2]]: "Total amount made from the start date until the indicated time",
+    [metrics[3]]: "Total commission made by the admin from the start date until the indicated time",
+    [metrics[4]]: "The total number of purchases made between a buyer and a merchant from the start date until the indicated time",
+    [metrics[5]]: "The total number of items refunded from the start date until the indicated time",
+    [metrics[6]]: "The total number of items sold from the start date until the indicated time",
+    [metrics[7]]: "The ratio of the merchants to buyers who joined from the start date until the indicated time",
+    [metrics[8]]: "The average revenue made by a merchant calculated from the start date until the indicated time",
+    [metrics[9]]: "The average admin commission gained by a merchant calculated from the start date until the indicated time",
+    [metrics[10]]: "The ratio of purchases made by guest users to registered users from the start date until the indicated time",
+    [metrics[12]]: "The average number of purchases made per buyer calculated from the start date until the indicated time",
+    [metrics[13]]: "The average money spent on a single order calculated from the start date until the indicated time",
     "Rank": "The rank depends on the metric on the immediate right",
     "Name": "Name of the merchant/buyer"
 }
@@ -2775,40 +2770,36 @@ function fillInYear(timeData, startMarketPlace) {
 function addHelp() {
     // finding all the header tags
     var headings = document.getElementsByTagName("th");
-		if (currState == "Merchants")
-		{
-			helpDict["Rank"] = "Indicates the rank of the merchant based on the total revenue earned by him";
-			helpDict["Name"] = "Name of the merchant";
-			helpDict["Email"] = "Email of the merchant ";
-			helpDict["Total Revenue"] = "The total amount of money made by the merchant";
-			helpDict["Number of Orders"] = "Total number of transactions the merchant has been involved in";
-			helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions of the merchant";
-		}
-		else if (currState == "Buyers")
-		{
-			helpDict["Rank"] = "Indicates the rank of the buyer based on the total amount of money spent ";
-			helpDict["Name"] = "Name of the buyer";
-			helpDict["Email"] = "Email of the buyer";
-			helpDict["Total Money Spent"] = "Total money spent by the buyer in the specific time frame";
-			helpDict["Number of Orders"] = "The total number of orders involving the buyer and a different seller";
-			helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions involving the buyer";
-		}
-		else if (currState == "Payment Gateways")
-		{
-			helpDict["Rank"] = "Indicates the rank of the payment gateway based on the total amount of money transferred";
-			helpDict["Name"] = "Name of the payment gateway";
-			helpDict["Money Transferred"] = "Total amount of money transferred through the payment gateway";
-			helpDict["Admin Commission Earned"] = "Admin commission earned by the admin in the transactions which occur through the payment gateway";
-		}
-		else
-		{
-			helpDict["Rank"] = "Indicates the rank of the item based on the total number of transactions involved";
-			helpDict["Name"] = "Name of the item being ranked";
-			helpDict["Number of Transactions"] = "The total number of unique transactions the item is involved in";
-			helpDict["Total Money Spent"] = "The total amount of money spent by the buyers on purchasing this particular item";
-			helpDict["Total Quantity Bought"] = "The total quantity of this item bought by all the buyers";
-			helpDict["Seller"] = "The seller selling this particular item";
-		}
+    if (currState == "Merchants") {
+        helpDict["Rank"] = "Indicates the rank of the merchant based on the total revenue earned by him";
+        helpDict["Name"] = "Name of the merchant";
+        helpDict["Email"] = "Email of the merchant ";
+        helpDict["Total Revenue"] = "The total amount of money made by the merchant";
+        helpDict["Number of Orders"] = "Total number of transactions the merchant has been involved in";
+        helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions of the merchant";
+    }
+    else if (currState == "Buyers") {
+        helpDict["Rank"] = "Indicates the rank of the buyer based on the total amount of money spent ";
+        helpDict["Name"] = "Name of the buyer";
+        helpDict["Email"] = "Email of the buyer";
+        helpDict["Total Money Spent"] = "Total money spent by the buyer in the specific time frame";
+        helpDict["Number of Orders"] = "The total number of orders involving the buyer and a different seller";
+        helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions involving the buyer";
+    }
+    else if (currState == "Payment Gateways") {
+        helpDict["Rank"] = "Indicates the rank of the payment gateway based on the total amount of money transferred";
+        helpDict["Name"] = "Name of the payment gateway";
+        helpDict["Money Transferred"] = "Total amount of money transferred through the payment gateway";
+        helpDict["Admin Commission Earned"] = "Admin commission earned by the admin in the transactions which occur through the payment gateway";
+    }
+    else {
+        helpDict["Rank"] = "Indicates the rank of the item based on the total number of transactions involved";
+        helpDict["Name"] = "Name of the item being ranked";
+        helpDict["Number of Transactions"] = "The total number of unique transactions the item is involved in";
+        helpDict["Total Money Spent"] = "The total amount of money spent by the buyers on purchasing this particular item";
+        helpDict["Total Quantity Bought"] = "The total quantity of this item bought by all the buyers";
+        helpDict["Seller"] = "The seller selling this particular item";
+    }
     // iterating through all of them and adding in the explanations over them
     for (var i = 0; i < headings.length; i++) {
         var heading = headings[i];
