@@ -1,6 +1,6 @@
 /**
  * @fileoverview admin side code for the marketplace report generator plugin
- * 
+ *
  * @author Naseer Ahmed Khan
  * @author Abhinav Narayana Balasubramaniam
  */
@@ -332,7 +332,7 @@ function getFirstDate(megaData) {
 
 /**
  * function to do all the calculations for all the data analysis
- * 
+ *
  */
 function megaCalculation() {
     // getting all the records by making api calls
@@ -363,8 +363,10 @@ function megaCalculation() {
     currDate = temp.getDate() + "-" + (Number(temp.getMonth()) + 1) + "-" + temp.getFullYear();
     // locationData = calculateLocation();
     loginData = retrieveCfValueJSON("loginCount");
+		var loginTemp;
     if (loginData) {
         loginData = loginData.Values[0];
+				loginTemp = $.extend(true,{},loginData);
         latestDate = loginData.latestData.date.split("-");
         delete loginData.latestData.date;
         if (!loginData.historicalData[latestDate[2]]) {
@@ -378,6 +380,7 @@ function megaCalculation() {
         var loginc = { "latestData": { "date": currDate }, "historicalData": {} };
         createCfImplementationsJSON("loginCount", loginc, false);
         loginData = loginc;
+				loginTemp = loginc;
     }
 
     loginData = loginData.historicalData;
@@ -405,8 +408,7 @@ function megaCalculation() {
     allData[metrics[10]] = fillInMonth(temp);
 
     // TODO: have to fix logins
-    temp = retrieveCfValueJSON("loginCount").Values[0];
-    allData[metrics[11]] = displayLoginCount(temp);
+    allData[metrics[11]] = displayLoginCount(loginTemp);
     console.log("display format of login data", allData[metrics[11]])
 
     allData[metrics[12]] = calculateAveragePurchasesPerBuyer(trans, allData[metrics[0]]);
@@ -519,6 +521,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "buyers-tables", "user");
             $("#buyerStartDateDiv").children("input").datepicker("update", buyerStartDate);
             $("#buyerEndDateDiv").children("input").datepicker("update", buyerEndDate);
+						addHelp();
         }
         else if (currState == "Merchants") {
             currMerchData = getCumulative(MerchantHistory, keyName["Merchant"], merchStartDate, merchEndDate, MerchantUsers);
@@ -527,6 +530,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "merchants-tables", "merchant");
             $("#merchantStartDateDiv").children("input").datepicker("update", merchStartDate);
             $("#merchantEndtDateDiv").children("input").datepicker("update", merchEndDate);
+						addHelp();
         }
         else if (currState == "Payment Gateways") {
             currPayData = getCumulative(PaymentHistory, "Money Transferred", payStartDate, payEndDate, Pays);
@@ -535,6 +539,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "pay-tables", "pay");
             $("#payStartDateDiv").children("input").datepicker("update", payStartDate);
             $("#payEndDateDiv").children("input").datepicker("update", payEndDate);
+						addHelp();
         }
         else if (currState == "Items") {
             currItemData = getCumulative(itemHistory, "Number of Transactions", itemStartDate, itemEndDate, Items);
@@ -543,6 +548,7 @@ $(document).ready(function () {
             updateFrontEnd(currData, "item-tables", "item");
             $("#itemStartDateDiv").children("input").datepicker("update", itemStartDate);
             $("#itemEndtDateDiv").children("input").datepicker("update", itemEndDate);
+						addHelp();
         }
     });
 
@@ -807,113 +813,131 @@ function getCumulative(data, heading, startDate, endDate, userData, shallow = fa
     var endMonth = endDate.getMonth();
     var endDay = endDate.getDate();
 
+		console.log("userData",userData);
+		if (Object.keys(data).length)
+		{
+			var firstY = Object.keys(data)[0];
+	    var firstM = Object.keys(data[firstY])[0];
+	    var firstD = Object.keys(data[firstY][firstM])[0];
+	    var firstGuy = Object.keys(data[firstY][firstM][firstD])[0];
+			if (firstGuy)
+			{
+				var sample = data[firstY][firstM][firstD][firstGuy];
+		    var keys = Object.keys(sample);
+					var dataStructure = {};
+			    for (var i = 0; i < keys.length; i++) {
+			        var key = keys[i];
+			        dataStructure[key] = !isNaN(sample[key]);
+			    }
 
-    var firstY = Object.keys(data)[0];
-    var firstM = Object.keys(data[firstY])[0];
-    var firstD = Object.keys(data[firstY][firstM])[0];
-    var firstGuy = Object.keys(data[firstY][firstM][firstD])[0];
-    var sample = data[firstY][firstM][firstD][firstGuy];
-    var keys = Object.keys(sample);
-    var dataStructure = {};
-    for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        dataStructure[key] = !isNaN(sample[key]);
-    }
+			    var cumulData = jQuery.extend(true, {}, userData);
+			    //Iterating through all days between start date and end date
+			    // Side Note: We realize we could have added a day to a date object and could have made this iteration much simpler,
+			    // but we realized that too late and were too lazy change this code. Sorry
+			    for (var i = startYear; i <= endYear; i++) {
+			        if (startYear == endYear) {
+			            var startM = startMonth;
+			            var endM = endMonth;
+			        }
+			        else if (i == startYear) {
+			            var startM = startMonth;
+			            var endM = 11;
+			        }
+			        else if (i == endYear) {
+			            var startM = 0;
+			            var endM = endMonth;
+			        }
+			        else {
+			            var startM = 0;
+			            var endM = 11;
+			        }
 
-    var cumulData = jQuery.extend(true, {}, userData);
-    //Iterating through all days between start date and end date
-    // Side Note: We realize we could have added a day to a date object and could have made this iteration much simpler,
-    // but we realized that too late and were too lazy change this code. Sorry
-    for (var i = startYear; i <= endYear; i++) {
-        if (startYear == endYear) {
-            var startM = startMonth;
-            var endM = endMonth;
-        }
-        else if (i == startYear) {
-            var startM = startMonth;
-            var endM = 11;
-        }
-        else if (i == endYear) {
-            var startM = 0;
-            var endM = endMonth;
-        }
-        else {
-            var startM = 0;
-            var endM = 11;
-        }
+			        for (var j = startM; j <= endM; j++) {
+			            if (startM == endM && startYear == endYear) {
+			                var startD = startDay;
+			                var endD = endDay;
+			            }
+			            else if (j == startM && i == startYear) {
+			                var startD = startDay;
+			                var endD = getMonthDays(i, j);
+			            }
+			            else if (j == endM && i == endYear) {
+			                var startD = 1;
+			                var endD = endDay;
+			            }
+			            else {
+			                var startD = 1;
+			                var endD = getMonthDays(i, j);
+			            }
 
-        for (var j = startM; j <= endM; j++) {
-            if (startM == endM && startYear == endYear) {
-                var startD = startDay;
-                var endD = endDay;
-            }
-            else if (j == startM && i == startYear) {
-                var startD = startDay;
-                var endD = getMonthDays(i, j);
-            }
-            else if (j == endM && i == endYear) {
-                var startD = 1;
-                var endD = endDay;
-            }
-            else {
-                var startD = 1;
-                var endD = getMonthDays(i, j);
-            }
+			            for (var k = startD; k <= endD; k++) {
+			                if (data[i] != null) {
+			                    if (data[i][j] != null) {
+			                        if (data[i][j][k] != null) {
+			                            var dayTransactions = data[i][j][k];
 
-            for (var k = startD; k <= endD; k++) {
-                if (data[i] != null) {
-                    if (data[i][j] != null) {
-                        if (data[i][j][k] != null) {
-                            var dayTransactions = data[i][j][k];
+			                            for (user in dayTransactions) {
+			                                if (shallow) {
 
-                            for (user in dayTransactions) {
-                                if (shallow) {
+			                                    if (cumulData[user] == null) {
 
-                                    if (cumulData[user] == null) {
+			                                        cumulData[user] = dayTransactions[user];
+			                                    }
+			                                    else {
+			                                        cumulData[user] += dayTransactions[user];
+			                                    }
+			                                }
+			                                else {
+			                                    if (cumulData[user] == null) {
+			                                        cumulData[user] = {};
+			                                        for (var l = 0; l < keys.length; l++) {
+			                                            var key = keys[l];
+			                                            cumulData[user][key] = dayTransactions[user][key];
 
-                                        cumulData[user] = dayTransactions[user];
-                                    }
-                                    else {
-                                        cumulData[user] += dayTransactions[user];
-                                    }
-                                }
-                                else {
-                                    if (cumulData[user] == null) {
-                                        cumulData[user] = {};
-                                        for (var l = 0; l < keys.length; l++) {
-                                            var key = keys[l];
-                                            cumulData[user][key] = dayTransactions[user][key];
-
-                                        }
-                                    }
-                                    else {
-                                        for (var l = 0; l < keys.length; l++) {
-                                            var key = keys[l];
-                                            if (dataStructure[key]) {
-                                                cumulData[user][key] += dayTransactions[user][key];
-                                                cumulData[user][key] = Math.round(cumulData[user][key] * 100) / 100;
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                            }
-                        }
-                    }
-                }
+			                                        }
+			                                    }
+			                                    else {
+			                                        for (var l = 0; l < keys.length; l++) {
+			                                            var key = keys[l];
+			                                            if (dataStructure[key]) {
+			                                                cumulData[user][key] += dayTransactions[user][key];
+			                                                cumulData[user][key] = Math.round(cumulData[user][key] * 100) / 100;
+			                                            }
+			                                        }
+			                                    }
+			                                }
 
 
-            }
-        }
-    }
+			                            }
+			                        }
+			                    }
+			                }
 
-    if (shallow) {
-        return cumulData;
-    }
-    else {
-        return sortData(cumulData, heading);
-    }
+
+			            }
+			        }
+			    }
+
+			    if (shallow) {
+			        return cumulData;
+			    }
+			    else {
+			        return sortData(cumulData, heading);
+			    }
+			}
+			else
+			{
+				return {};
+			}
+
+
+
+		}
+		else
+		{
+			return {}
+		}
+
 
 }
 
@@ -1007,7 +1031,7 @@ function addOptionsSelected(type) {
 
 /**
  * addOption - This function takes in a JSON data, column data and heading name and returns a JSON
- * Object with added column. 
+ * Object with added column.
  *
  * @param  {JSON} currData description
  * @param  {JSON} newCol   description
@@ -1135,8 +1159,8 @@ function calculateLocation() {
 }
 
 /**
- * converting null into empty string 
- * @param {String} str string which needs to be handled 
+ * converting null into empty string
+ * @param {String} str string which needs to be handled
  * @returns {String} returns "" for null otherwise the input
  */
 function handleNull(str) {
@@ -1396,11 +1420,11 @@ function createMegaData() {
 
 
 /**
- * makes the data which is being displayed 
+ * makes the data which is being displayed
  * @param {JSON} data JSON of the table data which is going to be tablized
- * @param {String} tableID name of the id given to the table which is going to be updated with the given data 
- * @param {String} type tells where to append the number of results found  
- * @param {Array} [sumBlackList=[]] black list which tells which metrics are not going to be added up  
+ * @param {String} tableID name of the id given to the table which is going to be updated with the given data
+ * @param {String} type tells where to append the number of results found
+ * @param {Array} [sumBlackList=[]] black list which tells which metrics are not going to be added up
  * @param {Array} [groupings=false] an array of arrays which tells how to group the columns being tablized, leave empty if groupings are not needed while making the table
  */
 function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = false) {
@@ -1558,7 +1582,7 @@ function getValue(array) {
 /**
  * function which carries out mergesort
  * @param {Array} array unsorted array
- * @returns {Array} sorted array 
+ * @returns {Array} sorted array
  */
 function mergesort(array) {
     if (array.length < 2) {
@@ -1659,7 +1683,7 @@ var currDay = new Date();
  */
 var allData;
 /**
- * The format in which the periodic reports are being displayed, can be day, week, month, quarter, year 
+ * The format in which the periodic reports are being displayed, can be day, week, month, quarter, year
  * @type {String}
  */
 var timeDisplayType = "day";
@@ -1674,7 +1698,7 @@ var displayData;
  */
 var reportType;
 /**
- * An array of arrays which indicates the different groups which are being grouped together 
+ * An array of arrays which indicates the different groups which are being grouped together
  * @type {Array}
  * @constant
  */
@@ -1787,9 +1811,9 @@ function getRecordsTransactionHistory() {
 
 /**
  * create a custom field inside the implementations and set the value of it
- * @param {String} cfName name of the custom field whose value needs to be set 
+ * @param {String} cfName name of the custom field whose value needs to be set
  * @param {String} storedData value which is going to be stored inside a custom field
- * @param {JSON|boolean} cf a json object of the existing custom field, false if a custom field doesn't exist 
+ * @param {JSON|boolean} cf a json object of the existing custom field, false if a custom field doesn't exist
  */
 function createCfImplementations(cfName, storedData, cf) {
     var baseUrl = document.location.hostname;
@@ -1823,7 +1847,7 @@ function createCfImplementations(cfName, storedData, cf) {
         $.ajax(settings1);
 
     }
-    // if the custom field doesn't already exists 
+    // if the custom field doesn't already exists
     else {
         // the json body to make the post request to make a custom field
         data = {
@@ -1879,10 +1903,10 @@ function createCfImplementations(cfName, storedData, cf) {
 }
 
 /**
- * to store in stringified version of the json in a custom field 
- * @param {String} cfName the name of the custom field to store in the JSON data 
+ * to store in stringified version of the json in a custom field
+ * @param {String} cfName the name of the custom field to store in the JSON data
  * @param {JSON} storedDataJSON JSON which is going to be stored in the custom field
- * @param {JSON|boolean} cf JSON of the existing custom field, false if it doesn't exist 
+ * @param {JSON|boolean} cf JSON of the existing custom field, false if it doesn't exist
  */
 function createCfImplementationsJSON(cfName, storedDataJSON, cf) {
     // calling the make custom fields function
@@ -1963,7 +1987,7 @@ function searchBar(userRecords, tableData, input) {
     for (i = 0; i < userRecords.length; i++) {
         userRecords[i].FullName = userRecords[i].FirstName + " " + userRecords[i].LastName;
     }
-    // options for the fuse search 
+    // options for the fuse search
     var options1 = {
         "shouldSort": true,
         "includeScore": true,
@@ -2009,7 +2033,7 @@ function searchBar(userRecords, tableData, input) {
 /**
  * function to make each single graph
  * @param {JSON} tableData json containing the information of each table row
- * @param {Array} yLines array of the names of each y value 
+ * @param {Array} yLines array of the names of each y value
  * @param {String} xMarking the metric which is going to be used inside the x axis
  * @param {Node} chartNode the canvas element on which the chart is going to be graphed onto
  * @returns {Object} a chartjs chart object is returned
@@ -2048,7 +2072,7 @@ function singleGraph(tableData, yLines, xMarking, chartNode) {
 }
 
 /**
- * function to make graphs of all the respective graphs sorted by different categories 
+ * function to make graphs of all the respective graphs sorted by different categories
  */
 function groupGraphs() {
     // getting the graph elements
@@ -2070,7 +2094,7 @@ function groupGraphs() {
  * to switch the table div around and display the graph
  */
 function flipGraph() {
-    // check if the div with class flipper has the flip class and swap the flip class if it doesn't have it 
+    // check if the div with class flipper has the flip class and swap the flip class if it doesn't have it
     if ($(".flipper").hasClass("flip")) {
         $(".flipper").removeClass("flip");
         $(".front").removeClass("hide");
@@ -2084,7 +2108,7 @@ function flipGraph() {
 }
 
 /**
- * iterate through the checkboxes inside the settings popup and 
+ * iterate through the checkboxes inside the settings popup and
  */
 function updateMetricsTime() {
     var popUp = document.getElementById("popUpTime");
@@ -2162,10 +2186,10 @@ function retCSV(rankTable, timeTable, type) {
 }
 
 /**
- * calculating all the necessary user data 
- * @param {Array} records array of all the user data records 
+ * calculating all the necessary user data
+ * @param {Array} records array of all the user data records
  * @param {Array} [metricsArray] a list of metrics which needs to be caluclated
- * @returns {JSON} JSON data which needs to be returned 
+ * @returns {JSON} JSON data which needs to be returned
  */
 function retUserData(records, metricsArray = [metrics[0], metrics[1], metrics[7]]) {
     monthWise = {};
@@ -2216,8 +2240,8 @@ function retUserData(records, metricsArray = [metrics[0], metrics[1], metrics[7]
 
 /**
  * gives an array of JSON of all the calulated time data
- * @param {Array} transactionRecords array of all the transactions which nee 
- * @param {Array} metricsArray array of all the metrics to be calculated 
+ * @param {Array} transactionRecords array of all the transactions which nee
+ * @param {Array} metricsArray array of all the metrics to be calculated
  * @returns {JSON} array of json of all the calculated values
  */
 function retTransactionData(transactionRecords, metricsArray = [metrics[2], metrics[3], metrics[4], metrics[5], metrics[6]]) {
@@ -2446,7 +2470,7 @@ function calculateAverageOrderValue(grossMerchandiseValue, transactions) {
 }
 /**
  * function to generate an array of arrays containing all the metrics which have been grouped into respective groups according to the group
- * @param {Array} metrics 
+ * @param {Array} metrics
  * @returns an array of array with all the respective groups
  */
 function getGrouping(metrics) {
@@ -2751,6 +2775,40 @@ function fillInYear(timeData, startMarketPlace) {
 function addHelp() {
     // finding all the header tags
     var headings = document.getElementsByTagName("th");
+		if (currState == "Merchants")
+		{
+			helpDict["Rank"] = "Indicates the rank of the merchant based on the total revenue earned by him";
+			helpDict["Name"] = "Name of the merchant";
+			helpDict["Email"] = "Email of the merchant ";
+			helpDict["Total Revenue"] = "The total amount of money made by the merchant";
+			helpDict["Number of Orders"] = "Total number of transactions the merchant has been involved in";
+			helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions of the merchant";
+		}
+		else if (currState == "Buyers")
+		{
+			helpDict["Rank"] = "Indicates the rank of the buyer based on the total amount of money spent ";
+			helpDict["Name"] = "Name of the buyer";
+			helpDict["Email"] = "Email of the buyer";
+			helpDict["Total Money Spent"] = "Total money spent by the buyer in the specific time frame";
+			helpDict["Number of Orders"] = "The total number of orders involving the buyer and a different seller";
+			helpDict["Total Admin Commission"] = "Total commission earned by the admin in transactions involving the buyer";
+		}
+		else if (currState == "Payment Gateways")
+		{
+			helpDict["Rank"] = "Indicates the rank of the payment gateway based on the total amount of money transferred";
+			helpDict["Name"] = "Name of the payment gateway";
+			helpDict["Money Transferred"] = "Total amount of money transferred through the payment gateway";
+			helpDict["Admin Commission Earned"] = "Admin commission earned by the admin in the transactions which occur through the payment gateway";
+		}
+		else
+		{
+			helpDict["Rank"] = "Indicates the rank of the item based on the total number of transactions involved";
+			helpDict["Name"] = "Name of the item being ranked";
+			helpDict["Number of Transactions"] = "The total number of unique transactions the item is involved in";
+			helpDict["Total Money Spent"] = "The total amount of money spent by the buyers on purchasing this particular item";
+			helpDict["Total Quantity Bought"] = "The total quantity of this item bought by all the buyers";
+			helpDict["Seller"] = "The seller selling this particular item";
+		}
     // iterating through all of them and adding in the explanations over them
     for (var i = 0; i < headings.length; i++) {
         var heading = headings[i];
@@ -2772,7 +2830,7 @@ function addHelp() {
 
 /**
  * return the number of days in a particular month in a year
- * @param {Number} year the year 
+ * @param {Number} year the year
  * @param {Number} month the month
  * @returns {Number} number of days in a month
  */
@@ -2960,4 +3018,3 @@ function liveCurrencyratesConversion(transactionRecords, base = "AUD") {
 
 
 }
-
