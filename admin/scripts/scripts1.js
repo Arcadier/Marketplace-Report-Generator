@@ -359,21 +359,31 @@ function megaCalculation() {
 
 
     // TODO: fix the logins for new marketplaces
+    temp = new Date();
+    currDate = temp.getDate() + "-" + (Number(temp.getMonth()) + 1) + "-" + temp.getFullYear();
+    // locationData = calculateLocation();
+    loginData = retrieveCfValueJSON("loginCount");
+    if (loginData) {
+        loginData = loginData.Values[0];
+        latestDate = loginData.latestData.date.split("-");
+        delete loginData.latestData.date;
+        if (!loginData.historicalData[latestDate[2]]) {
+            loginData.historicalData[latestDate[2]] = {};
+        }
+        if (!loginData.historicalData[latestDate[2]][latestDate[1] - 1]) {
+            loginData.historicalData[latestDate[2]][latestDate[1] - 1] = {}
+        };
+        loginData.historicalData[latestDate[2]][latestDate[1] - 1][latestDate[0]] = loginData.latestData;
+    } else {
+        var loginc = { "latestData": { "date": currDate }, "historicalData": {} };
+        createCfImplementationsJSON("loginCount", loginc, false);
+        loginData = loginc;
+    }
 
-    // locationData =  calculateLocation();
-    // loginData = retrieveCfValueJSON("loginCount");
-    // loginData = loginData.Values[0];
-    // latestDate = loginData.latestData.date.split("-");
-    // delete loginData.latestData.date;
-    // if (!loginData.historicalData[latestDate[2]]) {
-    //   loginData.historicalData[latestDate[2]] = {};
-    // }
-    // if (!loginData.historicalData[latestDate[2]][latestDate[1] - 1]) {
-    //   loginData.historicalData[latestDate[2]][latestDate[1] - 1] = {}
-    // };
-    // loginData.historicalData[latestDate[2]][latestDate[1] - 1][latestDate[0]] = loginData.latestData;
-    // loginData = loginData.historicalData;
-    // loginData = getCumulative(loginData, null, merchStartDate, merchEndDate, {}, true);
+    loginData = loginData.historicalData;
+    loginData = getCumulative(loginData, null, merchStartDate, merchEndDate, {}, true);
+    console.log("login data inside mega calculation", loginData);
+
 
     currMerchData = getCumulative(MerchantHistory, keyName["Merchant"], merchStartDate, merchEndDate, MerchantUsers);
 
@@ -393,9 +403,12 @@ function megaCalculation() {
     temp = calculateRatioRegisteredBuyers(transactionRecords);
     temp = temp["historicData"];
     allData[metrics[10]] = fillInMonth(temp);
+
     // TODO: have to fix logins
-    // temp = retrieveCfValueJSON("loginCount");
-    // allData[metrics[11]] = displayLoginCount(temp);
+    temp = retrieveCfValueJSON("loginCount").Values[0];
+    allData[metrics[11]] = displayLoginCount(temp);
+    console.log("display format of login data", allData[metrics[11]])
+
     allData[metrics[12]] = calculateAveragePurchasesPerBuyer(trans, allData[metrics[0]]);
     allData[metrics[13]] = calculateAverageOrderValue(allData[metrics[2]], trans);
 }
@@ -1873,6 +1886,9 @@ function createCfImplementations(cfName, storedData, cf) {
  */
 function createCfImplementationsJSON(cfName, storedDataJSON, cf) {
     // calling the make custom fields function
+    if (cfName == "loginCount") {
+        console.log("login data stored succesfully");
+    }
     createCfImplementations(cfName, JSON.stringify(storedDataJSON), cf);
 }
 
@@ -2528,7 +2544,7 @@ function calculateRatioRegisteredBuyers(transactionRecords) {
  */
 function displayLoginCount(loginData) {
     // manipulating the login data to the required format
-    loginData = loginData.Values[0];
+    console.log("login data", loginData);
     latestDate = loginData.latestData.date.split("-");
     delete loginData.latestData.date;
     if (!loginData.historicalData[latestDate[2]]) {
@@ -2566,7 +2582,9 @@ function displayLoginCount(loginData) {
         }
     }
     // fill in years with blank data
-    return fillInYear(output, new Date(marketplaceStartDate));
+    out = fillInYear(output, new Date(marketplaceStartDate));
+    console.log("out", out);
+    return out;
 }
 
 /**
