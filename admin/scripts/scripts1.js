@@ -1632,7 +1632,7 @@ function merge(array1, array2) {
  * @type {Array}
  * @constant
  */
-var metrics = ["Total-Users", "Total-Merchants", 'Gross-Merchandise-Value', 'Total-Admin-Commission', 'Total-Orders', 'Items-Refunded', 'Items-Sold', "Merchant-Buyer-Ratio", "Average-Revenue-Per-Merchant", "Average-Commission-Fee-Per-Merchant", "Guest-Registered-User-Ratio", "Total-Logins", "Average-Purchases-Per-Buyer", "Average-Order-Value"];
+var metrics = ["Total Users", "Total-Merchants", 'Gross Merchandise Value', 'Total Admin Commission', 'Total Orders', 'Items Refunded', 'Items Sold', "Merchant Buyer Ratio", "Average Revenue Per Merchant", "Average Commission Fee Per Merchant", "Guest Registered User Ratio", "Total Logins", "Average Purchases Per Buyer", "Average Order Value"];
 
 /**
  * An array of all optional metrics for periodic reports
