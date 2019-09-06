@@ -2064,7 +2064,9 @@ function singleGraph(tableData, yLines, xMarking, chartNode) {
     };
     // pushing in all the xvalues which are going to be part of the graph
     for (key in tableData) {
-        graphSettings.data.labels.push(tableData[key][xMarking]);
+        if(key!=metrics[7]&&key!=metrics[10]){
+            graphSettings.data.labels.push(tableData[key][xMarking]);
+        }
     }
     // pushing in all the y values which are going to be graphed out
     for (i = 0; i < yLines.length; i++) {
@@ -2075,7 +2077,9 @@ function singleGraph(tableData, yLines, xMarking, chartNode) {
         };
         // pushing in each individual point into the graph
         for (key in tableData) {
-            currDataSet.data.push(tableData[key][yLines[i]]);
+            if(key!=metrics[7]&&key!=metrics[10]){
+                currDataSet.data.push(tableData[key][yLines[i]]);
+            }
         }
         // pushing the data set into the graph settings
         graphSettings.data.datasets.push(currDataSet);
@@ -2094,11 +2098,20 @@ function groupGraphs() {
     // getting the groupings as an array
     groupings = getGrouping(parameterList.concat(extra));
     // iterating through the graphs and appending them to the canvas
-    for (let i = 1; i < groupings.length; i++) {
+    let currCanvas = document.createElement("canvas");
+        graphDiv.appendChild(currCanvas);
+        if (groupings[1].length) {
+            // temp = {};
+            // temp[metrics[7]] = displayData[metrics[7]];
+            // temp[metrics[10]] = displayData[metrics[10]];
+            // console.log(temp);
+                singleGraph(displayData, [metrics[0],metrics[1]], groupings[0], currCanvas);
+        }
+    for (let i = 2; i < groupings.length; i++) {
         let currCanvas = document.createElement("canvas");
         graphDiv.appendChild(currCanvas);
         if (groupings[i].length) {
-            singleGraph(displayData, groupings[i], groupings[0], currCanvas);
+                singleGraph(displayData, groupings[i], groupings[0], currCanvas);
         }
     }
 
@@ -3035,4 +3048,14 @@ function liveCurrencyratesConversion(transactionRecords, base = "AUD") {
     }
 
 
+}
+
+function removeElement(element,array){
+	var output = [];
+	for(let i=0;i<array.length;i++){
+		if(array[i]!=element){
+			output.push(array[i]);
+        }
+    }
+    return output;
 }
