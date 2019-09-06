@@ -41,6 +41,6 @@ Periodic reports show different metrics, sorted by timedurations. The display fo
 
 ### Visualization
 
-You may click the visualization button to view the graph data of the reports generated.
+You may click the `Chart` button to view the graph data of the reports generated.
 
 ![graph period report](marketplace-images/graph-report.jpg)
