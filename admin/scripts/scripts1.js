@@ -1510,7 +1510,7 @@ function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = fals
         table.childNodes[1].appendChild(newRow);
     }
 
-    var footerHeading = document.createElement("th");
+    var footerHeading = document.createElement("td");
     var totalContainer = document.createElement("div");
     var pTotal = document.createElement("p");
     // footerHeading.style = "text-align:center";
@@ -1521,7 +1521,7 @@ function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = fals
     footerRow.appendChild(footerHeading)
     for (header in headers) {
         if (header != Object.keys(headers)[0] && !sumBlackList.includes(header)) {
-            var footData = document.createElement("th");
+            var footData = document.createElement("td");
             // footData.style = "text-align:center";
             if (totals[header] == null) {
                 footData.innerHTML = "";
@@ -1539,6 +1539,7 @@ function updateFrontEnd(data, tableID, type, sumBlackList = [], groupings = fals
     results.innerHTML = Object.keys(data).length + " results found";
     $("#" + tableID).tablesorter();
     $("#" + tableID).trigger("updateAll");
+    addHelp();
 }
 
 
@@ -1632,7 +1633,22 @@ function merge(array1, array2) {
  * @type {Array}
  * @constant
  */
-var metrics = ["Total Users", "Total-Merchants", 'Gross Merchandise Value', 'Total Admin Commission', 'Total Orders', 'Items Refunded', 'Items Sold', "Merchant Buyer Ratio", "Average Revenue Per Merchant", "Average Commission Fee Per Merchant", "Guest Registered User Ratio", "Total Logins", "Average Purchases Per Buyer", "Average Order Value"];
+var metrics = [
+    "Total Users",
+    "Total Merchants",
+    'Gross Merchandise Value', 
+    'Total Admin Commission', 
+    'Total Orders', 
+    'Items Refunded',
+    'Items Sold',
+    "Merchant Buyer Ratio",
+    "Average Revenue Per Merchant",
+    "Average Commission Fee Per Merchant",
+    "Guest Registered User Ratio",
+    "Total Logins",
+    "Average Purchases Per Buyer",
+    "Average Order Value"
+];
 
 /**
  * An array of all optional metrics for periodic reports
@@ -1710,7 +1726,7 @@ var metricGroupings = [
  */
 var helpDict = {
     [metrics[0]]: "Total number of users who joined from the start date until the indicated time",
-    [metrics[1]]: "Total number of merchants who joined from the start date until the indicated time    ",
+    [metrics[1]]: "Total number of merchants who joined from the start date until the indicated time",
     [metrics[2]]: "Total amount made from the start date until the indicated time",
     [metrics[3]]: "Total commission made by the admin from the start date until the indicated time",
     [metrics[4]]: "The total number of purchases made between a buyer and a merchant from the start date until the indicated time",
@@ -1723,7 +1739,9 @@ var helpDict = {
     [metrics[12]]: "The average number of purchases made per buyer calculated from the start date until the indicated time",
     [metrics[13]]: "The average money spent on a single order calculated from the start date until the indicated time",
     "Rank": "The rank depends on the metric on the immediate right",
-    "Name": "Name of the merchant/buyer"
+    "Name": "Name of the merchant/buyer",
+    "Time Interval":"The duration in which the values of the metrics are calculated",
+    "Total":"Sum of all the numeric metrics"
 }
 // TODO: adapt this function to work with page sized more than 1000 transactions
 /**
@@ -2479,7 +2497,7 @@ function getGrouping(metrics) {
             }
         }
     }
-    output.splice(0, 0, ["Time-Interval"]);
+    output.splice(0, 0, ["Time Interval"]);
     return output;
 }
 
@@ -2637,7 +2655,7 @@ function cumDataConverter(msData, startDate, endDate, options) {
     // declaring all the data which needs to be just added and all the data which needs to be added in and divided
     var normalData = [metrics[0], metrics[1], metrics[2], metrics[3], metrics[4], metrics[5], metrics[6], metrics[11]];
     var ratioData = [metrics[7], metrics[8], metrics[9], metrics[10], metrics[12], metrics[13]];
-
+    var averageData = [metrics[8],metrics[9],metrics[12],metrics[13]];
     var startYear = startDate.getFullYear();
     var endYear = endDate.getFullYear();
     var startMonth = startDate.getMonth();
@@ -2715,12 +2733,21 @@ function cumDataConverter(msData, startDate, endDate, options) {
                                 netTotal2 = netTotal2 + msData[key][i][j][k][Object.keys(msData[key][i][j][k])[1]];
 
                             }
-                            cmData[key][i][j][k] = parseFloat(Number(netTotal) / Number(netTotal2));
-                            if (!isNaN(cmData[key][i][j][k])) {
-                                cmData[key][i][j][k] = Math.round(cmData[key][i][j][k] * 100) / 100;
-                            } else {
-                                cmData[key][i][j][k] = "not defined";
+                            if(averageData.includes(key)){
+                                cmData[key][i][j][k] = parseFloat(Number(netTotal) / Number(netTotal2));
+                                if(cmData[key][i][j][k]=="Infinity"){
+                                    cmData[key][i][j][k] = 0;
+                                }
+                                else if (!isNaN(cmData[key][i][j][k])) {
+                                    cmData[key][i][j][k] = Math.round(cmData[key][i][j][k] * 100) / 100;
+                                } else {
+                                    cmData[key][i][j][k] = "Not Defined";
+                                }
                             }
+                            else{
+                                cmData[key][i][j][k] = String(netTotal)+":"+String(netTotal2);
+                            }
+
                         }
 
                     }
@@ -2854,7 +2881,7 @@ function makeDisplayData(inputData, type) {
                         timeStamp = day.toString() + "-" + (Number(month) + 1).toString() + "-" + year.toString();
                         if (!outputData[timeStamp]) {
                             outputData[timeStamp] = {};
-                            outputData[timeStamp]["Time-Interval"] = timeStamp;
+                            outputData[timeStamp]["Time Interval"] = timeStamp;
                         }
                         outputData[timeStamp][key] = inputData[key][year][month][day];
                         if (!inputData[key][year][month][day]) {
@@ -2877,7 +2904,7 @@ function makeDisplayData(inputData, type) {
                         if (count % 7 == 0) {
                             timeStamp = 'Week ' + parseInt(count / 7);
                             if (!outputData[timeStamp]) {
-                                outputData[timeStamp] = { "Time-Interval": timeStamp };
+                                outputData[timeStamp] = { "Time Interval": timeStamp };
                             }
                             outputData[timeStamp][key] = inputData[key][year][month][day];
                             if (!inputData[key][year][month][day]) {
@@ -2897,7 +2924,7 @@ function makeDisplayData(inputData, type) {
                     timeStamp = (Number(month) + 1).toString() + "-" + year.toString();
                     if (!outputData[timeStamp]) {
                         outputData[timeStamp] = {};
-                        outputData[timeStamp]["Time-Interval"] = timeStamp;
+                        outputData[timeStamp]["Time Interval"] = timeStamp;
                     }
                     lastDay = Object.keys(inputData[key][year][month])[Object.keys(inputData[key][year][month]).length - 1];
                     outputData[timeStamp][key] = inputData[key][year][month][lastDay];
@@ -2919,7 +2946,7 @@ function makeDisplayData(inputData, type) {
                         timeStamp = 'Quarter ' + parseInt(count / 3);
                         if (!outputData[timeStamp]) {
                             outputData[timeStamp] = {};
-                            outputData[timeStamp]["Time-Interval"] = timeStamp;
+                            outputData[timeStamp]["Time Interval"] = timeStamp;
                         }
                         lastDay = Object.keys(inputData[key][year][month])[Object.keys(inputData[key][year][month]).length - 1];
                         outputData[timeStamp][key] = inputData[key][year][month][lastDay];
@@ -2938,7 +2965,7 @@ function makeDisplayData(inputData, type) {
                 timeStamp = year.toString();
                 if (!outputData[timeStamp]) {
                     outputData[timeStamp] = {};
-                    outputData[timeStamp]["Time-Interval"] = timeStamp;
+                    outputData[timeStamp]["Time Interval"] = timeStamp;
                 }
                 lastMonth = Object.keys(inputData[key][year])[Object.keys(inputData[key][year]).length - 1];
                 lastDay = Object.keys(inputData[key][year][lastMonth])[Object.keys(inputData[key][year][lastMonth]).length - 1];
