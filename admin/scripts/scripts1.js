@@ -563,7 +563,7 @@ $(document).ready(function () {
                 updateFrontEnd(currData, "merchants-tables", "merchant");
             }
             else {
-                toastr.error("This marketplace deosn't exist in this time", "Invalid date");
+                toastr.error("This marketplace doesn't exist in this time", "Invalid date");
             }
         }
         else {
