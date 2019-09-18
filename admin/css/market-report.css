@@ -37,6 +37,21 @@
 .top-box-log {
     padding: 4px;
 }
+.btn-info-plug-in {
+    color: #50c8ff;
+    display: block;
+    height: 30px;
+    text-align: right;
+    width: 190px;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Open Sans';
+}
+
+.float {
+    float: right;
+}
+
 
 .top-box-log input {
     display: inline-block;
