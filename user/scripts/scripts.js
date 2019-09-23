@@ -118,7 +118,7 @@ function userlogins() {
     var cfs = res["CustomFields"];
     for (var i = 0; i < cfs.length; i++) {
       var cfCode = cfs[i]["Code"];
-      if (cfCode.startsWith("logincount")) {
+       if (cfCode.startsWith("logincount")) {
         cf = JSON.parse(cfs[i]["Values"]);
         code = cfCode;
         break;
