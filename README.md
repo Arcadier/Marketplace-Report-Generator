@@ -16,18 +16,18 @@
 
 ### Installation:
 * Download the repository
-* Extract `admin` and `user` folders
-* Compress `admin` and `user` together
+* Extract `admin`, `marketplace-images` and `user` folders
+* Compress `admin`, , `marketplace-images` and `user` together
 * Upload the resulting `.zip` file to your [developer dashboard](https://dashboard.sandbox.arcadier.io/account/login)
-* Access the `Admin Portal` of your [sandbox marketplace](https://api.arcadier.com/sandbox-marketplace).
-* Go to `Plug-Ins`.
+* Access the `Admin Portal` of your [sandbox marketplace](https://api.arcadier.com/sandbox-marketplace)
+* Go to `Plug-Ins`
 * Install the Plug-In
 
 ### Links
 * Refer to the [Arcadier Website](https://support.arcadier.com/hc/en-us/articles/360033645454) for more information.
 * You can check out our [Documentation](https://api.arcadier.com) for instructions on how to install this on your marketplace, as well as how to build your own.
 * To see other plug-ins available on Arcadier, check out our [Plug-In marketplace](https://api.arcadier.com/plug-in-marketplace/).
-* To see other open-source Plug-Ins available on Github check out our [Plug-In Sample Codes](https://github.com/Arcadier/Plug-In-Sample-Codes)
+* To see other open-source Plug-Ins available on Github check out our [Plug-In Sample Codes](https://github.com/Arcadier/Plug-In-Sample-Codes).
 
 
 # Marketplace Report Generator
