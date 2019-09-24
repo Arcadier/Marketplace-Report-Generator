@@ -24,7 +24,7 @@
 * Install the Plug-In
 
 ### Links
-* Refer to the [Arcadier Website](https://bootstrap.arcadier.com/github/plug-in-icons/Report.png) for more information.
+* Refer to the [Arcadier Website](https://support.arcadier.com/hc/en-us/articles/360033645454) for more information.
 * You can check out our [Documentation](https://api.arcadier.com) for instructions on how to install this on your marketplace, as well as how to build your own.
 * To see other plug-ins available on Arcadier, check out our [Plug-In marketplace](https://api.arcadier.com/plug-in-marketplace/).
 * To see other open-source Plug-Ins available on Github check out our [Plug-In Sample Codes](https://github.com/Arcadier/Plug-In-Sample-Codes)
