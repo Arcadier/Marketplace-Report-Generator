@@ -1,17 +1,20 @@
-<head>
-    <meta https-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- begin header -->
+    <!-- <meta https-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Market Report Generator</title>
-    <script type="text/javascript"
-        src="https://bootstrap.arcadier.com/adminportal/js/jquery.nicescroll.min.js"></script>
+    <title>Market Report Generator</title> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="scripts/sol.js"></script>
+    <link href="css/sol.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript"src="https://bootstrap.arcadier.com/adminportal/js/jquery.nicescroll.min.js"></script>
     <script type="text/javascript" src="https://bootstrap.arcadier.com/adminportal/js/jquery.tablesorter.js"></script>
-    <script type="text/javascript" src="https://bootstrap.arcadier.com/adminportal/js/sol.js"></script>
+    <!-- <script type="text/javascript" src="https://bootstrap.arcadier.com/adminportal/js/sol.js"></script> -->
     <script type="text/javascript" src="scripts/moment.min.js"></script>
     <script type="text/javascript" src="scripts/daterangepicker.js"></script>
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.4.5/fuse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+    
     <link href="https://bootstrap.arcadier.com/adminportal/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="https://bootstrap.arcadier.com/adminportal/css/jquery-ui.min.css" rel="stylesheet" type="text/css">
     <link href="https://bootstrap.arcadier.com/adminportal/css/html5imageupload.css" rel="stylesheet" type="text/css">
@@ -34,8 +37,7 @@
             margin-top: 15px;
         }
     </style>
-</head>
-
+<!-- end header -->
 <body class="page-merchant page-market-report">
     <div id="mainstuff" class="page-merchant page-market-report hide">
 
@@ -1384,12 +1386,12 @@
                     $(".element-onwards").addClass("hide");
                 }
             }
-            $(window).load(function () {
+            $(window).on('load', (function () {
                 dynmic_align();
                 $(window).resize(function () {
                     dynmic_align();
                 });
-            });
+            }));
 
             function confirm_remove(ele) {
                 jQuery('.list-body .list_row.confirm-delete').remove();
@@ -1661,7 +1663,7 @@
 
 
 
-            $(window).load(function () {
+            $(window).on('load', function () {
                 /*$("body").on("click" , "#report-menu2" , function(){
                     $(this).closest(".dropdown-menu")
                 });*/
@@ -1833,8 +1835,7 @@
                     $(this).closest(".rank-select").find(".selected-display").text(current);
                 });
 
-            });
-
+            })
         </script>
     </div>
 </body>
